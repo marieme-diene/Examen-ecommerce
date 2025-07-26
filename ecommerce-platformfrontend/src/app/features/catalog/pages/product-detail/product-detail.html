@@ -1,0 +1,34 @@
+<div *ngIf="product" class="product-detail-container">
+  <div class="product-gallery">
+    <ng-container *ngIf="product.images && product.images.length > 1; else singleImage">
+      <div class="carousel">
+        <button class="carousel-arrow left" (click)="selectImage((selectedImage - 1 + product.images.length) % product.images.length)" aria-label="Image précédente">&#8592;</button>
+        <img *ngIf="product.images.length > selectedImage"
+             [src]="product.images[selectedImage]"
+             [alt]="product.name"
+             class="product-img-large" />
+        <button class="carousel-arrow right" (click)="selectImage((selectedImage + 1) % product.images.length)" aria-label="Image suivante">&#8594;</button>
+        <div class="carousel-index">{{ selectedImage + 1 }} / {{ product.images.length }}</div>
+        <div class="carousel-thumbs">
+          <img *ngFor="let img of product.images; let i = index"
+               [src]="img"
+               [alt]="product.name + ' ' + i"
+               [class.selected-thumb]="i === selectedImage"
+               (click)="selectImage(i)" />
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #singleImage>
+      <img [src]="product.image" [alt]="product.name" class="product-img-large" />
+    </ng-template>
+  </div>
+  <div class="product-info">
+    <h1>{{ product.name }}</h1>
+    <p *ngIf="product.longDescription; else shortDesc">{{ product.longDescription }}</p>
+    <ng-template #shortDesc><p>{{ product.description }}</p></ng-template>
+    <div class="product-price">{{ product.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</div>
+    <div class="product-stock">Stock : {{ product.stock }}</div>
+    <button mat-raised-button color="primary" (click)="addToCart()">Ajouter au panier</button>
+  </div>
+</div>
+<div *ngIf="!product" class="not-found">Produit introuvable.</div> 

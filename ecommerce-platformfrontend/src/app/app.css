@@ -1,0 +1,422 @@
+.sidenav-container {
+  height: 100vh;
+}
+.sidenav {
+  width: 220px;
+}
+.mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.afrimarket-header {
+  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(30,64,175,0.08);
+  min-height: 64px;
+}
+.afrimarket-logo {
+  font-size: 1.7rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-left: 12px;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+.afrimarket-search {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 0 24px;
+  min-width: 340px;
+  box-shadow: 0 1px 4px rgba(30,64,175,0.06);
+}
+.afrimarket-search input[type="text"] {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 8px 6px;
+  width: 220px;
+  background: transparent;
+}
+.afrimarket-search-btn {
+  margin-left: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.afrimarket-search-btn:hover {
+  background: #1e40af;
+}
+.afrimarket-header-btn {
+  margin-left: 8px;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+.cart-btn.afrimarket-header-btn {
+  margin-left: 32px;
+}
+.spacer {
+  flex: 1 1 auto;
+}
+.main-content {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 64px);
+}
+.cart-btn {
+  position: relative;
+}
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #f0060b;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  font-weight: bold;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  z-index: 2;
+}
+.snackbar {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  background: #323232;
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  animation: snackbar-in 0.2s;
+}
+@keyframes snackbar-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@media (max-width: 900px) {
+  .afrimarket-search {
+    min-width: 180px;
+    margin: 0 8px;
+  }
+  .afrimarket-logo {
+    font-size: 1.1rem;
+    margin-left: 4px;
+  }
+}
+.afrimarket-help-menu .afrimarket-help-chat-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px 0;
+  background: #f5f7fa;
+}
+.afrimarket-help-chat-btn {
+  background: #2563eb !important;
+  color: #fff !important;
+  font-weight: 500;
+  min-width: 170px;
+  box-shadow: 0 2px 8px rgba(30,64,175,0.08);
+}
+.afrimarket-footer {
+  background: #f3f3f3;
+  margin-top: 32px;
+  padding: 0;
+  border-top: 1px solid #e0e0e0;
+}
+.afrimarket-footer .footer-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 32px 16px;
+  color: #222;
+}
+.afrimarket-footer h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+.afrimarket-footer h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 18px 0 8px 0;
+}
+.afrimarket-footer p {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+@media (max-width: 700px) {
+  .afrimarket-footer .footer-content {
+    padding: 16px 4vw 24px 4vw;
+  }
+  .afrimarket-footer h3, .afrimarket-footer h4 {
+    font-size: 1rem;
+  }
+  .afrimarket-footer p {
+    font-size: 0.95rem;
+  }
+}
+.afrimarket-footer-dark {
+  background: #2d2d2d;
+  color: #fff;
+  padding-top: 32px;
+  font-size: 1rem;
+  border-top: 1px solid #444;
+}
+.footer-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 32px 16px;
+  flex-wrap: wrap;
+}
+.footer-logo {
+  min-width: 180px;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.afrimarket-footer-logo {
+  font-size: 2.1rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #fff;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  margin-bottom: 18px;
+  display: inline-block;
+}
+.footer-newsletter-block {
+  flex: 1 1 340px;
+  max-width: 420px;
+  margin: 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.newsletter-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.newsletter-desc {
+  font-size: 0.98rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.newsletter-form {
+  width: 100%;
+}
+.newsletter-input-row {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 4px;
+  padding: 0 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(30,64,175,0.06);
+}
+.newsletter-mail-icon {
+  color: #2563eb;
+  font-size: 1.3rem;
+  margin-right: 6px;
+}
+.newsletter-input-row input[type="email"] {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 12px 6px;
+  width: 220px;
+  background: transparent;
+  color: #222;
+}
+.newsletter-input-row button {
+  margin-left: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.newsletter-input-row button:hover {
+  background: #1e40af;
+}
+.newsletter-policy-row {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 4px;
+  font-size: 0.92rem;
+  color: #ccc;
+}
+.newsletter-policy-row input[type="checkbox"] {
+  margin-right: 8px;
+  margin-top: 3px;
+}
+.newsletter-policy-row label {
+  line-height: 1.4;
+}
+.newsletter-policy-row .newsletter-legal {
+  color: #2563eb;
+  font-size: 0.92rem;
+}
+.footer-apps-block {
+  min-width: 220px;
+  margin-left: 32px;
+  margin-top: 8px;
+}
+.footer-apps-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 1.1rem;
+}
+.footer-apps-desc {
+  font-size: 0.98rem;
+  margin-bottom: 10px;
+}
+.footer-apps-icons {
+  display: flex;
+  gap: 10px;
+}
+.footer-app-icon {
+  width: 110px;
+  height: 34px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+@media (max-width: 900px) {
+  .footer-top-row {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 4vw;
+  }
+  .footer-logo {
+    margin-bottom: 18px;
+  }
+  .footer-apps-block {
+    margin-left: 0;
+    margin-top: 18px;
+  }
+  .footer-newsletter-block {
+    margin: 0;
+    max-width: 100%;
+  }
+}
+.afrimarket-footer-brands {
+  background: #4a4a4a;
+  color: #fff;
+  padding: 24px 0 32px 0;
+  font-size: 1rem;
+}
+.brands-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 18px;
+}
+.brands-col {
+  min-width: 120px;
+  margin: 0 10px;
+}
+.brands-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+  color: #2563eb;
+  letter-spacing: 0.5px;
+}
+.brands-socials {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+.brands-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.97rem;
+}
+@media (max-width: 900px) {
+  .brands-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 4vw;
+  }
+  .brands-col {
+    margin-bottom: 18px;
+  }
+}
+.footer-links-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 24px 16px;
+  border-top: 1px solid #444;
+  background: #4a4a4a;
+  flex-wrap: wrap;
+}
+.footer-links-col {
+  min-width: 180px;
+  margin-bottom: 18px;
+  margin-right: 32px;
+}
+.footer-col-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+  color: #2563eb;
+}
+.footer-links-col a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 6px;
+  font-size: 0.97rem;
+  transition: color 0.2s;
+}
+.footer-links-col a:hover {
+  color: #2563eb;
+}
+.footer-sites-row {
+  display: flex;
+  gap: 24px;
+}
+@media (max-width: 900px) {
+  .footer-links-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 4vw;
+  }
+  .footer-links-col {
+    margin-right: 0;
+  }
+  .footer-sites-row {
+    gap: 8px;
+  }
+}

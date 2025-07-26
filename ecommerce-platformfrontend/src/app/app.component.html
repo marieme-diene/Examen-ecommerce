@@ -1,0 +1,277 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport="true" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'" [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)">
+    <mat-toolbar>Menu</mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/catalog">Catalogue</a>
+      <a mat-list-item routerLink="/cart">Panier</a>
+      <a mat-list-item routerLink="/account">Mon Compte</a>
+      <a mat-list-item routerLink="/account/register">Créer un compte</a>
+      <a mat-list-item routerLink="/admin" *ngIf="isAdmin">Admin</a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="afrimarket-header">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span class="afrimarket-logo">AfriMarket</span>
+      <span class="spacer"></span>
+      <form class="afrimarket-search" (submit)="onHeaderSearch($event)">
+        <input type="text" placeholder="Recherche" [(ngModel)]="headerSearch" name="headerSearch" />
+        <button type="submit" class="afrimarket-search-btn">Rechercher</button>
+      </form>
+      <span class="spacer"></span>
+      <button mat-stroked-button class="afrimarket-header-btn" [matMenuTriggerFor]="loginMenu">
+        <mat-icon>person</mat-icon>
+        Se connecter
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #loginMenu="matMenu">
+        <button mat-raised-button color="primary" style="width: 100%; margin-bottom: 8px;" routerLink="/login">Se connecter</button>
+        <button mat-menu-item routerLink="/account">
+          <mat-icon>person_outline</mat-icon>
+          <span>Votre compte</span>
+        </button>
+        <button mat-menu-item routerLink="/account/orders">
+          <mat-icon>inventory_2</mat-icon>
+          <span>Vos commandes</span>
+        </button>
+        <button mat-menu-item routerLink="/account/favorites">
+          <mat-icon>favorite_border</mat-icon>
+          <span>Favoris</span>
+        </button>
+      </mat-menu>
+      <button mat-icon-button class="afrimarket-header-btn" [matMenuTriggerFor]="helpMenu">
+        <mat-icon>help_outline</mat-icon>
+        Aide
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #helpMenu="matMenu" class="afrimarket-help-menu">
+        <button mat-menu-item routerLink="/order">
+          <span>Passer une commande</span>
+        </button>
+        <button mat-menu-item routerLink="/payment">
+          <span>Payer une commande</span>
+        </button>
+        <button mat-menu-item routerLink="/tracking">
+          <span>Suivre votre colis</span>
+        </button>
+        <button mat-menu-item routerLink="/cancel-order">
+          <span>Annuler des commandes</span>
+        </button>
+        <button mat-menu-item routerLink="/return">
+          <span>Faire un retour</span>
+        </button>
+        <div class="afrimarket-help-chat-btn-wrapper">
+          <button mat-raised-button color="primary" class="afrimarket-help-chat-btn" routerLink="/chat">
+            <mat-icon>chat</mat-icon>
+            Chat en direct
+          </button>
+        </div>
+      </mat-menu>
+      <button mat-icon-button routerLink="/cart" class="cart-btn afrimarket-header-btn">
+        <mat-icon>shopping_cart</mat-icon>
+        <ng-container *ngIf="(cartCount$ | async) as count">
+          <span class="cart-badge" *ngIf="count > 0">{{ count }}</span>
+        </ng-container>
+      </button>
+    </mat-toolbar>
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+<ng-container *ngIf="notification$ | async as notif">
+  <div class="snackbar" *ngIf="notif">{{ notif }}</div>
+</ng-container>
+
+<footer class="afrimarket-footer-dark">
+  <div class="footer-top-row">
+    <div class="footer-logo">
+      <span class="afrimarket-footer-logo">AfriMarket</span>
+    </div>
+    <div class="footer-newsletter-block">
+      <div class="newsletter-title">NOUVEAU SUR AFRIMARKET ?</div>
+      <div class="newsletter-desc">Inscrivez-vous à nos communications pour recevoir nos meilleures offres !</div>
+      <form class="newsletter-form" (submit)="$event.preventDefault()">
+        <div class="newsletter-input-row">
+          <span class="newsletter-mail-icon">&#9993;</span>
+          <input type="email" placeholder="Entrez votre adresse e-mail" required />
+          <button type="submit">S'abonner</button>
+        </div>
+        <div class="newsletter-policy-row">
+          <input type="checkbox" id="newsletter-policy" />
+          <label for="newsletter-policy">
+            J'accepte la Politique de confidentialité et des cookies de AfriMarket et je comprends que je peux me désabonner des newsletters à tout moment.<br>
+            <span class="newsletter-legal">J'accepte les conditions légales</span>
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="footer-apps-block">
+      <!-- Bloc application mobile supprimé -->
+    </div>
+  </div>
+  <div class="footer-links-row">
+    <div class="footer-links-col">
+      <div class="footer-col-title">BESOIN D'AIDE?</div>
+      <a href="#">Discuter avec nous</a>
+      <a href="#">Centre d'assistance</a>
+      <a href="#">Contactez-nous</a>
+      <div class="footer-col-title">LIENS UTILES</div>
+      <a href="#">Suivre sa commande</a>
+      <a href="#">Expédition et livraison</a>
+      <a href="#">Politique de retour</a>
+      <a href="#">Comment commander?</a>
+      <a href="#">Centre de réparation</a>
+    </div>
+    <div class="footer-links-col">
+      <div class="footer-col-title">A PROPOS</div>
+      <a href="#">Qui sommes-nous</a>
+      <a href="#">Carrières chez AfriMarket</a>
+      <a href="#">Conditions Générales d'utilisation</a>
+      <a href="#">Politique de Retours et de Remboursements</a>
+      <a href="#">Conditions générales d'utilisation du crédit magasin</a>
+      <a href="#">Informations de paiement de AfriMarket</a>
+      <a href="#">Notification sur la Confidentialité</a>
+      <a href="#">Notifications sur les cookies de AfriMarket</a>
+      <a href="#">Nos Boutiques Officielles</a>
+      <a href="#">Propriété intellectuelle</a>
+      <a href="#">Ventes Flash</a>
+    </div>
+    <div class="footer-links-col">
+      <div class="footer-col-title">GAGNEZ DE L'ARGENT</div>
+      <a href="#">Vendez sur AfriMarket</a>
+      <a href="#">AfriMarket Vendor Hub</a>
+      <a href="#">Affiliation - Gagnez de l'argent !</a>
+      <a href="#">Devenez consultant AfriMarket</a>
+      <a href="#">Devenez influenceur AfriMarket</a>
+    </div>
+    <div class="footer-links-col">
+      <div class="footer-col-title">SITES AFRIMARKET</div>
+      <div class="footer-sites-row">
+        <div>
+          <a href="#">Sénégal</a><br>
+          <a href="#">Côte d'Ivoire</a><br>
+          <a href="#">Egypt</a><br>
+          <a href="#">Ghana</a>
+        </div>
+        <div>
+          <a href="#">Kenya</a><br>
+          <a href="#">Maroc</a><br>
+          <a href="#">Nigeria</a><br>
+          <a href="#">Ouganda</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<footer class="afrimarket-footer-brands">
+  <div class="brands-row">
+    <div class="brands-col">
+      <div class="brands-title">RETROUVEZ-NOUS SUR</div>
+      <div class="brands-socials">
+        <mat-icon>facebook</mat-icon>
+        <mat-icon>close</mat-icon>
+        <mat-icon>instagram</mat-icon>
+        <mat-icon>music_note</mat-icon>
+      </div>
+      <div class="brands-list">
+        <div>Adidas</div>
+        <div>Apple</div>
+        <div>Astech</div>
+        <div>Beko</div>
+        <div>Binatone</div>
+        <div>Bio Naturelle</div>
+        <div>Bioderma</div>
+        <div>Cac</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-title">MODES DE PAIEMENT</div>
+      <div class="brands-socials">
+        <mat-icon>credit_card</mat-icon>
+      </div>
+      <div class="brands-list">
+        <div>Cantu</div>
+        <div>Carrefour</div>
+        <div>Darling</div>
+        <div>DECAKILA</div>
+        <div>Decathlon</div>
+        <div>DELL</div>
+        <div>Enduro</div>
+        <div>Evoluderm</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-list">
+        <div>Eyfel</div>
+        <div>Fluocaril</div>
+        <div>Garnier</div>
+        <div>Haier</div>
+        <div>Hisense</div>
+        <div>Hp</div>
+        <div>Huawei</div>
+        <div>ICONA</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-list">
+        <div>Infinix</div>
+        <div>Joya</div>
+        <div>L'Oreal</div>
+        <div>La Roche Posay</div>
+        <div>Lamacom</div>
+        <div>Lenovo</div>
+        <div>Leroy Merlin</div>
+        <div>LG</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-list">
+        <div>LIVONA</div>
+        <div>LOreal Paris</div>
+        <div>Maybelline</div>
+        <div>Maybelline New York</div>
+        <div>Mixa</div>
+        <div>Nexon</div>
+        <div>NIVEA</div>
+        <div>Panasonic</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-list">
+        <div>Philips</div>
+        <div>Puma</div>
+        <div>Roch</div>
+        <div>Roger Cavailles</div>
+        <div>Samsung</div>
+        <div>Sharp</div>
+        <div>SMART TECHNOLOGY</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-list">
+        <div>Smiley</div>
+        <div>Sony</div>
+        <div>Tecno</div>
+        <div>The Ordinary</div>
+        <div>Tijinou</div>
+        <div>Topface</div>
+        <div>TOPFACE Make Up</div>
+      </div>
+    </div>
+    <div class="brands-col">
+      <div class="brands-list">
+        <div>TOPICREM</div>
+        <div>Toshiba</div>
+        <div>Tuc Tuc</div>
+        <div>TWS</div>
+        <div>UNIPARCO PREMIUM</div>
+        <div>Wow</div>
+        <div>Xiaomi</div>
+      </div>
+    </div>
+  </div>
+</footer> 

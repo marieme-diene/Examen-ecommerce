@@ -1,0 +1,31 @@
+<div class="dashboard-container">
+  <div class="banner">
+    <div class="banner-content">
+      <h1>Bienvenue sur <span class="brand">Ma Boutique</span> !</h1>
+      <p>Découvrez nos meilleures offres et nouveautés du moment.</p>
+      <button mat-raised-button color="primary" routerLink="/catalog">Voir le catalogue</button>
+    </div>
+  </div>
+  <div class="categories-section">
+    <h2>Catégories populaires</h2>
+    <div class="categories-list">
+      <div class="category-card" *ngFor="let cat of ['Électronique', 'Mode', 'Maison', 'Beauté', 'Sport', 'Livres']">
+        <mat-icon>category</mat-icon>
+        <span>{{ cat }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="featured-section">
+    <h2>Produits en vedette</h2>
+    <div class="products-list">
+      <div class="product-card" *ngFor="let prod of [1,2,3,4]">
+        <div class="product-img"></div>
+        <div class="product-info">
+          <h3>Produit {{ prod }}</h3>
+          <p>Super description du produit {{ prod }}.</p>
+          <button mat-stroked-button color="accent">Voir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="cart-container">
+  <h1>Mon Panier</h1>
+  <div *ngIf="confirmationMessage" class="confirmation">{{ confirmationMessage }}</div>
+  <div *ngIf="cartService.getItems().length === 0" class="empty">Votre panier est vide.</div>
+  <div *ngIf="cartService.getItems().length > 0">
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Prix</th>
+          <th>Quantité</th>
+          <th>Sous-total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cartService.getItems()">
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.product.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</td>
+          <td>
+            <button mat-mini-button (click)="decrement(item.product.id)">-</button>
+            <input type="number" min="1" [value]="item.quantity" (change)="updateQuantity(item.product.id, $event)">
+            <button mat-mini-button (click)="increment(item.product.id)">+</button>
+          </td>
+          <td>{{ item.product.price * item.quantity | currency:'FCFA':'symbol':'1.0-0':'fr' }}</td>
+          <td><button mat-stroked-button color="warn" (click)="remove(item.product.id)">Supprimer</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="cart-total">
+      <span>Total :</span>
+      <span class="total-value">{{ cartService.getTotal() | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
+    </div>
+    <div class="cart-actions">
+      <button mat-stroked-button color="warn" (click)="clear()">Vider le panier</button>
+      <button mat-raised-button color="primary" (click)="goToCheckout()" [disabled]="cartService.getItems().length === 0">Commander</button>
+    </div>
+  </div>
+</div>

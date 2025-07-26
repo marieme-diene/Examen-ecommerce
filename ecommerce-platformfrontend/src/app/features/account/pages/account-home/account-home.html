@@ -1,0 +1,97 @@
+<div class="account-dashboard" *ngIf="user; else notLoggedIn">
+  <div class="account-header">
+    <h2>Bienvenue, {{ user.name }} !</h2>
+    <button mat-stroked-button color="warn" (click)="logout()">Déconnexion</button>
+  </div>
+  <div class="account-sections">
+    <div class="account-section">
+      <h3>Profil</h3>
+      <form *ngIf="editMode; else viewProfile" (ngSubmit)="saveProfile()">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput [(ngModel)]="name" name="name" required>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="email" name="email" required>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Enregistrer</button>
+        <button mat-button type="button" (click)="editMode=false">Annuler</button>
+      </form>
+      <ng-template #viewProfile>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <button mat-button color="primary" (click)="enableEdit()">Modifier le profil</button>
+      </ng-template>
+      <div class="success" *ngIf="message">{{ message }}</div>
+    </div>
+    <div class="account-section">
+      <h3>Historique des commandes</h3>
+      <div class="no-orders" *ngIf="orders.length === 0">Aucune commande pour le moment.</div>
+      <table class="orders-table" *ngIf="orders.length > 0">
+        <thead>
+          <tr><th>Commande</th><th>Date</th><th>Statut</th><th>Total</th><th>Facture</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>#{{ order.id }}</td>
+            <td>{{ order.date }}</td>
+            <td>
+              <span [ngClass]="{
+                'status-badge': true,
+                'status-en-attente': order.status === 'En attente',
+                'status-expediee': order.status === 'Expédiée',
+                'status-livree': order.status === 'Livrée',
+                'status-annulee': order.status === 'Annulée'
+              }">{{ order.status }}</span>
+            </td>
+            <td>{{ order.total | currency:'FCFA':'symbol':'1.0-0':'fr' }}</td>
+            <td>
+              <button mat-button color="accent" (click)="downloadInvoice(order)">Télécharger PDF</button>
+              <button mat-stroked-button color="primary" (click)="openOrderDetail(order)">Détail</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="account-section">
+      <h3>Adresses de livraison</h3>
+      <div *ngIf="addresses.length === 0" class="no-orders">Aucune adresse enregistrée.</div>
+      <table class="orders-table" *ngIf="addresses.length > 0">
+        <thead>
+          <tr><th>Nom</th><th>Adresse</th><th>Ville</th><th>Code postal</th><th>Pays</th><th>Téléphone</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let addr of addresses">
+            <td>{{ addr.name }}</td>
+            <td>{{ addr.street }}</td>
+            <td>{{ addr.city }}</td>
+            <td>{{ addr.postalCode }}</td>
+            <td>{{ addr.country }}</td>
+            <td>{{ addr.phone }}</td>
+            <td>
+              <button mat-button color="primary" (click)="startEditAddress(addr)">Modifier</button>
+              <button mat-button color="warn" (click)="deleteAddress(addr.id)">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button mat-stroked-button color="primary" (click)="startAddAddress()">Ajouter une adresse</button>
+      <form *ngIf="showAddressForm" (ngSubmit)="saveAddress()" style="margin-top:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+        <mat-form-field appearance="outline" style="width:140px;"><mat-label>Nom</mat-label><input matInput [(ngModel)]="addressForm.name" name="addressName" required></mat-form-field>
+        <mat-form-field appearance="outline" style="width:180px;"><mat-label>Adresse</mat-label><input matInput [(ngModel)]="addressForm.street" name="addressStreet" required></mat-form-field>
+        <mat-form-field appearance="outline" style="width:120px;"><mat-label>Ville</mat-label><input matInput [(ngModel)]="addressForm.city" name="addressCity" required></mat-form-field>
+        <mat-form-field appearance="outline" style="width:100px;"><mat-label>Code postal</mat-label><input matInput [(ngModel)]="addressForm.postalCode" name="addressPostal" required></mat-form-field>
+        <mat-form-field appearance="outline" style="width:120px;"><mat-label>Pays</mat-label><input matInput [(ngModel)]="addressForm.country" name="addressCountry" required></mat-form-field>
+        <mat-form-field appearance="outline" style="width:140px;"><mat-label>Téléphone</mat-label><input matInput [(ngModel)]="addressForm.phone" name="addressPhone" required></mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Enregistrer</button>
+        <button mat-button type="button" (click)="cancelAddressForm()">Annuler</button>
+      </form>
+    </div>
+  </div>
+</div>
+<ng-template #notLoggedIn>
+  <div class="not-logged-in">
+    <h2>Veuillez vous connecter</h2>
+    <a mat-stroked-button color="primary" routerLink="/account/login">Connexion</a>
+  </div>
+</ng-template>

@@ -1,0 +1,111 @@
+.product-detail-container {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 32px;
+  margin-top: 32px;
+}
+.product-img-large {
+  width: 240px;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.product-info {
+  flex: 1;
+}
+.product-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #f0060b;
+  margin: 16px 0 8px 0;
+}
+.product-stock {
+  color: #888;
+  margin-bottom: 16px;
+}
+.not-found {
+  margin: 48px;
+  font-size: 1.2rem;
+  color: #f0060b;
+}
+.carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.85;
+  transition: background 0.2s, opacity 0.2s;
+}
+.carousel-arrow.left { left: -18px; }
+.carousel-arrow.right { right: -18px; }
+.carousel-arrow:hover { background: #1e40af; opacity: 1; }
+.carousel-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.carousel-thumbs img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+.selected-thumb {
+  border: 2px solid #2563eb;
+}
+.carousel-index {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(37,99,235,0.85);
+  color: #fff;
+  padding: 3px 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  z-index: 3;
+}
+@media (max-width: 900px) {
+  .product-detail-container {
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px;
+  }
+  .product-img-large {
+    width: 100%;
+    height: auto;
+    max-width: 320px;
+    max-height: 320px;
+  }
+  .carousel-arrow.left { left: 0; }
+  .carousel-arrow.right { right: 0; }
+} 
