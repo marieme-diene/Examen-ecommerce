@@ -56,12 +56,24 @@
   background: #1e40af;
 }
 .afrimarket-header-btn {
-  margin-left: 8px;
+  margin-left: 16px;
   color: #fff !important;
   border-color: #fff !important;
 }
+
+/* Bouton Se connecter près de la recherche */
+.afrimarket-search + .afrimarket-header-btn {
+  margin-left: 12px;
+}
+
+/* Bouton Aide près de Se connecter */
+.afrimarket-search + .afrimarket-header-btn + .afrimarket-header-btn {
+  margin-left: 12px;
+}
+
+/* Panier à droite */
 .cart-btn.afrimarket-header-btn {
-  margin-left: 32px;
+  margin-left: 20px;
 }
 .spacer {
   flex: 1 1 auto;

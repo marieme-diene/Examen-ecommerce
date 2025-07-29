@@ -48,8 +48,8 @@ export class CartList {
   }
 
   goToCheckout() {
-    this.router.navigate(['/cart/checkout']).then(() => {
-      this.confirmationMessage = 'Redirection vers la validation de commande...';
+    this.router.navigate(['/payment/checkout']).then(() => {
+      this.confirmationMessage = 'Redirection vers la page de paiement...';
       setTimeout(() => this.confirmationMessage = '', 3000);
     });
   }

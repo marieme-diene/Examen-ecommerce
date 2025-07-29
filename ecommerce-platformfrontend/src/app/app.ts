@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from './features/cart/services/cart.service';
 import { Observable } from 'rxjs';
 import { NotificationService } from './features/account/services/notification.service';
+import { AuthService } from './features/account/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -37,17 +38,38 @@ import { NotificationService } from './features/account/services/notification.se
   styleUrl: './app.css'
 })
 export class App {
-  isAdmin = false; // À remplacer par la vraie logique d'auth plus tard
-  isHandset$ = null; // À remplacer par la logique responsive si besoin
+  isAdmin = false;
+  isHandset$ = null;
   cartCount$: Observable<number>;
   notification$;
   headerSearch = '';
-  constructor(private cartService: CartService, private notification: NotificationService, private router: Router) {
+  
+  constructor(
+    private cartService: CartService, 
+    private notification: NotificationService, 
+    private router: Router,
+    public authService: AuthService
+  ) {
     this.cartCount$ = this.cartService.count$;
     this.notification$ = this.notification.message$;
+    this.isAdmin = this.authService.isAdmin();
   }
+  
   onHeaderSearch(event: Event) {
     event.preventDefault();
     this.router.navigate(['/catalog'], { queryParams: { search: this.headerSearch } });
+  }
+
+  navigateToLogin() {
+    this.router.navigate(['/account/login']);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+
+  canAccessAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 }

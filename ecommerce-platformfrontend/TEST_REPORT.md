@@ -55,7 +55,7 @@
 - ✅ **Ajout au panier** : Fonctionne depuis le détail
 
 ### **Panier et Commande**
-- ✅ **Panier** : Affichage des produits ajoutés
+- ✅ **Panier** : Afficw3a34 d             hage des produits ajoutés
 - ✅ **Modification quantité** : + et - fonctionnent
 - ✅ **Suppression** : Retirer du panier
 - ✅ **Calcul total** : Prix correct en FCFA

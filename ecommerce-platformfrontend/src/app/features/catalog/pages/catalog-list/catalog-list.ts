@@ -9,7 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { ProductCard } from '../../components/product-card/product-card';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../../account/services/auth.service';
 
 @Component({
   selector: 'app-catalog-list',
@@ -35,7 +36,7 @@ export class CatalogList {
     'Chaussures femme', 'Serviette', 'Bijoux', 'Table'
   ];
   search = '';
-  searchTerm = ''; // Ajout de la propriété manquante
+  searchTerm = '';
   selectedCategory = '';
 
   // Favoris (local)
@@ -45,7 +46,7 @@ export class CatalogList {
   brands: string[] = [];
   productsByBrand: { [brand: string]: Product[] } = {};
 
-  // Pagination (sera adaptée par section)
+  // Pagination
   currentPage = 1;
   pageSize = 20;
   totalPages = 1;
@@ -57,15 +58,18 @@ export class CatalogList {
   loading = false;
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
+  isAdmin = false;
 
   constructor(
     private productService: ProductService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService
   ) {
     this.loading = true;
+    this.isAdmin = this.authService.isAdmin();
     this.productService.getProducts().subscribe(products => {
       this.products = products;
-      this.groupByBrand();
       this.applyFilters();
       this.loading = false;
     });
@@ -75,7 +79,7 @@ export class CatalogList {
     this.route.queryParams.subscribe(params => {
       if (params['search']) {
         this.search = params['search'];
-        this.searchTerm = params['search']; // Synchroniser searchTerm
+        this.searchTerm = params['search'];
       }
       this.productService.getProducts().subscribe(prods => {
         this.products = prods;
@@ -88,7 +92,9 @@ export class CatalogList {
   groupByBrand() {
     const map: { [brand: string]: Product[] } = {};
     for (const p of this.filteredProducts) {
-      if (!map[p.brand]) map[p.brand] = [];
+      if (!map[p.brand]) {
+        map[p.brand] = [];
+      }
       map[p.brand].push(p);
     }
     this.brands = Object.keys(map);
@@ -97,7 +103,7 @@ export class CatalogList {
 
   onSearchChange(value: string) {
     this.search = value;
-    this.searchTerm = value; // Synchroniser searchTerm
+    this.searchTerm = value;
     this.currentPage = 1;
     this.applyFilters();
   }
@@ -108,46 +114,56 @@ export class CatalogList {
     this.applyFilters();
   }
 
+  onBrandChange(value: string) {
+    this.selectedBrand = value;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
   onInput(event: Event) {
     const target = event.target as HTMLInputElement;
     this.onSearchChange(target.value);
   }
 
   applyFilters() {
-    this.loading = true;
-    setTimeout(() => {
-      let filtered = this.products;
+    let filtered = this.products;
 
-      // Filtre par recherche
-      if (this.searchTerm) {
-        filtered = filtered.filter(p => 
-          p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          p.description.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          p.brand.toLowerCase().includes(this.searchTerm.toLowerCase())
-        );
-      }
+    // Filtre par recherche
+    if (this.searchTerm) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        p.description.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        p.brand.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
 
-      // Filtre par marque
-      if (this.selectedBrand) {
-        filtered = filtered.filter(p => p.brand === this.selectedBrand);
-      }
+    // Filtre par catégorie
+    if (this.selectedCategory) {
+      filtered = filtered.filter(p => p.category === this.selectedCategory);
+    }
 
-      // Filtre par prix
-      if (this.minPrice !== null) {
-        filtered = filtered.filter(p => p.price >= this.minPrice!);
-      }
-      if (this.maxPrice !== null) {
-        filtered = filtered.filter(p => p.price <= this.maxPrice!);
-      }
+    // Filtre par marque
+    if (this.selectedBrand) {
+      filtered = filtered.filter(p => p.brand === this.selectedBrand);
+    }
 
-      this.filteredProducts = filtered;
-      this.updatePaginatedProducts();
-      this.loading = false;
-      
-      if (this.filteredProducts.length === 0) {
-        this.showMessage('Aucun produit trouvé avec ces critères', 'info');
-      }
-    }, 300);
+    // Filtre par prix
+    if (this.minPrice !== null) {
+      filtered = filtered.filter(p => p.price >= this.minPrice!);
+    }
+    if (this.maxPrice !== null) {
+      filtered = filtered.filter(p => p.price <= this.maxPrice!);
+    }
+
+    this.filteredProducts = filtered;
+    this.updatePaginatedProducts();
+    this.groupByBrand();
+
+    if (this.filteredProducts.length === 0) {
+      this.showMessage('Aucun produit trouvé pour vos critères de recherche.', 'info');
+    } else {
+      this.clearMessage();
+    }
   }
 
   updatePaginatedProducts() {
@@ -157,55 +173,55 @@ export class CatalogList {
     this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
   }
 
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePaginatedProducts();
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePaginatedProducts();
-    }
-  }
-
-  toggleFavorite(productId: number) {
-    if (this.favorites.has(productId)) {
-      this.favorites.delete(productId);
-      this.showMessage('Retiré des favoris', 'info');
-    } else {
-      this.favorites.add(productId);
-      this.showMessage('Ajouté aux favoris', 'success');
-    }
-    localStorage.setItem('favorites', JSON.stringify(Array.from(this.favorites)));
-  }
-
   onVoirPlus(brand: string) {
-    this.selectedBrand = brand;
-    this.currentPage = 1;
-    this.applyFilters();
-    this.showMessage(`Affichage des produits ${brand}`, 'info');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Navigation vers la page dédiée de la marque
+    this.router.navigate(['/catalog/brand', encodeURIComponent(brand)]);
   }
 
   clearFilters() {
     this.searchTerm = '';
     this.search = '';
-    this.selectedBrand = '';
+    this.selectedCategory = '';
     this.minPrice = null;
     this.maxPrice = null;
+    this.selectedBrand = '';
     this.currentPage = 1;
     this.applyFilters();
-    this.showMessage('Filtres réinitialisés', 'info');
+    this.showMessage('Filtres réinitialisés.', 'info');
   }
 
   showMessage(text: string, type: 'success' | 'error' | 'info') {
     this.message = text;
     this.messageType = type;
-    setTimeout(() => {
-      this.message = '';
-    }, 3000);
+    setTimeout(() => this.clearMessage(), 5000);
+  }
+
+  clearMessage() {
+    this.message = '';
+  }
+
+  toggleFavorite(productId: number) {
+    if (this.favorites.has(productId)) {
+      this.favorites.delete(productId);
+    } else {
+      this.favorites.add(productId);
+    }
+  }
+
+  // Méthodes réservées aux admins
+  editBrand(brand: string) {
+    if (this.isAdmin) {
+      // Logique d'édition de marque
+      console.log('Édition de la marque:', brand);
+      // Ici on pourrait ouvrir un modal ou naviguer vers une page d'édition
+    }
+  }
+
+  deleteBrand(brand: string) {
+    if (this.isAdmin && confirm(`Êtes-vous sûr de vouloir supprimer la marque "${brand}" ?`)) {
+      // Logique de suppression de marque
+      console.log('Suppression de la marque:', brand);
+      // Ici on pourrait supprimer tous les produits de cette marque
+    }
   }
 }

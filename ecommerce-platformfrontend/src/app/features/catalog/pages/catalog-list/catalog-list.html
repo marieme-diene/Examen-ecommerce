@@ -15,27 +15,21 @@
       <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Rechercher un produit..." class="search-input">
     </div>
     
-    <div class="filters-grid">
+    <div class="filters-row">
       <div class="filter-group">
-        <label>Marque</label>
-        <select [(ngModel)]="selectedBrand" (change)="applyFilters()" class="filter-select">
-          <option value="">Toutes les marques</option>
-          <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
+        <label>Catégorie</label>
+        <select [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange($event)" class="filter-select">
+          <option value="">Toutes</option>
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
         </select>
       </div>
       
       <div class="filter-group">
-        <label>Prix min (FCFA)</label>
-        <input type="number" [(ngModel)]="minPrice" (input)="applyFilters()" placeholder="0" class="filter-input">
-      </div>
-      
-      <div class="filter-group">
-        <label>Prix max (FCFA)</label>
-        <input type="number" [(ngModel)]="maxPrice" (input)="applyFilters()" placeholder="∞" class="filter-input">
-      </div>
-      
-      <div class="filter-group">
-        <button (click)="clearFilters()" class="clear-filters-btn">Réinitialiser</button>
+        <label>Marque</label>
+        <select [(ngModel)]="selectedBrand" (ngModelChange)="onBrandChange($event)" class="filter-select">
+          <option value="">Toutes</option>
+          <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
+        </select>
       </div>
     </div>
   </div>
@@ -49,52 +43,45 @@
       <button (click)="clearFilters()" class="clear-filters-btn">Voir tous les produits</button>
     </div>
 
+    <!-- Affichage par marque -->
     <ng-container *ngIf="filteredProducts.length > 0">
-      <div *ngIf="selectedBrand; else groupedByBrand">
-        <div class="brand-header">
-          <h2>{{ selectedBrand }}</h2>
-          <button (click)="selectedBrand = ''; applyFilters()" class="back-btn">← Retour</button>
+      <div *ngFor="let brand of brands; let i = index">
+        <div class="brand-section" [ngStyle]="{
+          'background': i % 2 === 0 ? (i % 4 === 0 ? '#2563eb' : '#111') : '#2563eb',
+          'color': '#fff',
+          'padding': '12px 18px',
+          'border-radius': '8px 8px 0 0',
+          'margin': '24px 0 0 0',
+          'display': 'flex',
+          'align-items': 'center',
+          'justify-content': 'space-between',
+          'font-size': '1.2rem',
+          'font-weight': 'bold'
+        }">
+          <span>{{ brand }}</span>
+          <div class="brand-actions">
+            <button mat-button style="color:#fff; text-decoration:underline; font-size:1rem;" (click)="onVoirPlus(brand)">
+              Voir plus
+            </button>
+            <!-- Options d'édition réservées aux admins -->
+            <ng-container *ngIf="isAdmin">
+              <button mat-icon-button style="color:#fff;" (click)="editBrand(brand)" title="Modifier la marque">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button style="color:#fff;" (click)="deleteBrand(brand)" title="Supprimer la marque">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-container>
+          </div>
         </div>
         <div class="products-grid">
-          <app-product-card *ngFor="let prod of paginatedProducts"
+          <app-product-card *ngFor="let prod of productsByBrand[brand]"
             [product]="prod"
             [isFavorite]="favorites.has(prod.id)"
             (toggleFavorite)="toggleFavorite(prod.id)"></app-product-card>
         </div>
       </div>
-      <ng-template #groupedByBrand>
-        <div *ngFor="let brand of brands; let i = index">
-          <div [ngStyle]="{
-            'background': i % 2 === 0 ? (i % 4 === 0 ? '#2563eb' : '#111') : '#2563eb',
-            'color': '#fff',
-            'padding': '12px 18px',
-            'border-radius': '8px 8px 0 0',
-            'margin': '24px 0 0 0',
-            'display': 'flex',
-            'align-items': 'center',
-            'justify-content': 'space-between',
-            'font-size': '1.2rem',
-            'font-weight': 'bold'
-          }">
-            <span>{{ brand }}</span>
-            <button mat-button style="color:#fff; text-decoration:underline; font-size:1rem;" (click)="onVoirPlus(brand)">Voir plus</button>
-          </div>
-          <div class="products-grid">
-            <app-product-card *ngFor="let prod of productsByBrand[brand]"
-              [product]="prod"
-              [isFavorite]="favorites.has(prod.id)"
-              (toggleFavorite)="toggleFavorite(prod.id)"></app-product-card>
-          </div>
-        </div>
-      </ng-template>
     </ng-container>
-
-    <!-- Pagination -->
-    <div *ngIf="selectedBrand && totalPages > 1" class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-btn">Précédent</button>
-      <span class="pagination-info">Page {{ currentPage }} sur {{ totalPages }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">Suivant</button>
-    </div>
   </div>
 </div>
 

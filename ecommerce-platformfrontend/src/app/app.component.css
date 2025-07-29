@@ -1,0 +1,323 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.main-content {
+  padding: 20px;
+}
+
+.afrimarket-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: #2563eb;
+  color: white;
+}
+
+.afrimarket-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.afrimarket-search {
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.afrimarket-search input {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  width: 300px;
+}
+
+.afrimarket-search-btn {
+  padding: 8px 16px;
+  background: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+.afrimarket-header-btn {
+  margin-left: 8px;
+  color: white;
+}
+
+.cart-btn {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.snackbar {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #2563eb;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+/* Footer styles */
+.afrimarket-footer-dark {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 40px 0;
+  margin-top: 40px;
+}
+
+.footer-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  margin-bottom: 40px;
+}
+
+.footer-logo {
+  flex: 1;
+}
+
+.afrimarket-footer-logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.footer-newsletter-block {
+  flex: 2;
+  margin: 0 40px;
+}
+
+.newsletter-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.newsletter-desc {
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.newsletter-input-row {
+  display: flex;
+  align-items: center;
+  background: #374151;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.newsletter-mail-icon {
+  padding: 0 12px;
+  color: #9ca3af;
+}
+
+.newsletter-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 12px;
+  outline: none;
+}
+
+.newsletter-input-row button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.newsletter-policy-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.newsletter-legal {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.footer-links-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-col-title {
+  font-weight: bold;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+.footer-links-col a {
+  color: #d1d5db;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.footer-links-col a:hover {
+  color: #2563eb;
+}
+
+.footer-sites-row {
+  display: flex;
+  gap: 20px;
+}
+
+.afrimarket-footer-brands {
+  background: #111827;
+  color: #f9fafb;
+  padding: 40px 0;
+}
+
+.brands-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.brands-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.brands-title {
+  font-weight: bold;
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+.brands-socials {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.brands-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.afrimarket-help-menu {
+  max-width: 300px;
+}
+
+.afrimarket-help-chat-btn-wrapper {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 8px;
+}
+
+.afrimarket-help-chat-btn {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .footer-top-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .footer-newsletter-block {
+    margin: 0;
+  }
+  
+  .footer-links-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .brands-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .afrimarket-search input {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-links-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .brands-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .afrimarket-search {
+    display: none;
+  }
+} 

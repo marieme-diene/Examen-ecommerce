@@ -29,7 +29,15 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "jspdf",
+              "canvg",
+              "core-js",
+              "@babel/runtime",
+              "raf",
+              "rgbcolor"
+            ]
           },
           "configurations": {
             "production": {
@@ -51,6 +59,21 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "client": {
+              "browser": "src/main.ts",
+              "tsConfig": "tsconfig.app.json",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public"
+                }
+              ],
+              "styles": [
+                "src/custom-theme.scss",
+                "src/styles.css"
+              ],
+              "outputMode": "static"
             }
           },
           "defaultConfiguration": "production"
@@ -63,6 +86,9 @@
             },
             "development": {
               "buildTarget": "ecommerce-platformfrontend:build:development"
+            },
+            "client": {
+              "buildTarget": "ecommerce-platformfrontend:build:client"
             }
           },
           "defaultConfiguration": "development"

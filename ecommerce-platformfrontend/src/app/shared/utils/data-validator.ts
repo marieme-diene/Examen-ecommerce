@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../../features/catalog/models/product.model';
-import { User } from '../../features/admin/user.service';
-import { Order } from '../../features/account/services/order.service';
+import { User } from '../../features/account/models/user.model';
+import { Order, OrderItem } from '../../features/account/services/order.service';
+
+type OrderStatus = 'En attente' | 'Confirmée' | 'En cours de livraison' | 'Livrée' | 'Annulée';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -100,11 +102,6 @@ export class DataValidatorService {
       if (!user.email || !this.isValidEmail(user.email)) {
         errors.push(`Utilisateur ${user.name}: Email invalide (${user.email})`);
       }
-
-      // Validation de la date d'inscription
-      if (user.registrationDate && !this.isValidDate(user.registrationDate)) {
-        warnings.push(`Utilisateur ${user.name}: Date d'inscription invalide`);
-      }
     });
 
     return {
@@ -132,20 +129,20 @@ export class DataValidatorService {
         errors.push(`Commande ${order.id}: Aucun produit dans la commande`);
       } else {
         order.items.forEach((item, itemIndex) => {
-          if (!item.product || !item.quantity || item.quantity <= 0) {
+          if (!item.productId || !item.name || !item.quantity || item.quantity <= 0) {
             errors.push(`Commande ${order.id}: Item ${itemIndex + 1} invalide`);
           }
         });
       }
 
       // Validation de la date
-      if (!order.date || !this.isValidDate(order.date)) {
-        warnings.push(`Commande ${order.id}: Date invalide`);
+      if (!order.date) {
+        warnings.push(`Commande ${order.id}: Date manquante`);
       }
 
       // Validation du statut
-      const validStatuses = ['En cours', 'Expédiée', 'Livrée', 'Annulée'];
-      if (!order.status || !validStatuses.includes(order.status)) {
+      const validStatuses: OrderStatus[] = ['En attente', 'Confirmée', 'En cours de livraison', 'Livrée', 'Annulée'];
+      if (!order.status || !validStatuses.includes(order.status as OrderStatus)) {
         warnings.push(`Commande ${order.id}: Statut suspect (${order.status})`);
       }
     });
@@ -188,9 +185,12 @@ export class DataValidatorService {
   /**
    * Vérifie si une date est valide
    */
-  private isValidDate(dateString: string): boolean {
-    const date = new Date(dateString);
-    return !isNaN(date.getTime());
+  private isValidDate(date: Date | string): boolean {
+    if (date instanceof Date) {
+      return !isNaN(date.getTime());
+    }
+    const dateObj = new Date(date);
+    return !isNaN(dateObj.getTime());
   }
 
   /**

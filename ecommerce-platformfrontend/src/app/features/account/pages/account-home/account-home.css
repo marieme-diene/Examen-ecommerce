@@ -74,6 +74,31 @@
 mat-form-field {
   width: 100%;
 }
+.test-actions {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.test-actions button {
+  margin-right: 10px;
+}
+
+.no-orders {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.no-orders a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.no-orders a:hover {
+  text-decoration: underline;
+}
 @media (max-width: 900px) {
   .account-sections {
     flex-direction: column;
@@ -81,5 +106,461 @@ mat-form-field {
   }
   .account-dashboard {
     padding: 12px;
+  }
+}
+
+/* Styles pour la section des fonctionnalités */
+.features-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  margin: 20px 0;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.features-section h3 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.feature-category {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.feature-category h4 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.feature-category ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-category li {
+  padding: 8px 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.9);
+}
+
+.feature-category ul ul {
+  margin-left: 20px;
+  margin-top: 5px;
+}
+
+.feature-category ul ul li {
+  font-size: 14px;
+  padding: 4px 0;
+  color: rgba(255,255,255,0.8);
+}
+
+/* Styles pour les informations utilisateur */
+.user-info {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.user-info h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row label {
+  font-weight: bold;
+  color: #555;
+  min-width: 80px;
+  margin-right: 15px;
+}
+
+.info-row span {
+  color: #333;
+  flex: 1;
+}
+
+.info-row input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.edit-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Styles pour les espaces client et admin */
+.client-space, .admin-space {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.client-space h3, .admin-space h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.info-box {
+  background: #e3f2fd;
+  border: 1px solid #2196f3;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.info-box mat-icon {
+  color: #2196f3;
+  margin-top: 2px;
+}
+
+.info-box div {
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Styles pour les commandes */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.order-header h5 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.order-date {
+  color: #666;
+  font-size: 14px;
+}
+
+.order-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-en-attente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-confirmée {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-en-cours-de-livraison {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-livrée {
+  background: #c3e6cb;
+  color: #155724;
+}
+
+.status-annulée {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.order-items {
+  margin-bottom: 15px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  flex: 2;
+  font-weight: 500;
+  color: #333;
+}
+
+.item-quantity {
+  flex: 1;
+  text-align: center;
+  color: #666;
+}
+
+.item-price {
+  flex: 1;
+  text-align: right;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+
+.order-total {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Styles pour les actions admin */
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.admin-order .order-header h5 {
+  font-size: 16px;
+}
+
+/* Styles pour les adresses */
+.addresses-section {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.addresses-section h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.address-form {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.addresses-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+.address-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.address-info h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.address-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.address-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* Styles pour les favoris */
+.favorites-section {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.favorites-section h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.no-favorites, .no-orders {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.no-favorites mat-icon, .no-orders mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.favorite-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.favorite-item:hover {
+  transform: translateY(-5px);
+}
+
+.favorite-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.favorite-item h4 {
+  margin: 10px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.favorite-item p {
+  color: #28a745;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .features-section {
+    padding: 20px;
+  }
+  
+  .feature-category {
+    padding: 15px;
+  }
+  
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .order-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .order-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .admin-actions {
+    grid-template-columns: 1fr;
+  }
+  
+  .address-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .addresses-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
 }
