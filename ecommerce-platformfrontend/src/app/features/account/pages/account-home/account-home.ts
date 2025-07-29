@@ -95,6 +95,20 @@ export class AccountHome implements OnInit {
     this.notification.showMessage(`${product.name} ajouté au panier !`, 'success');
   }
 
+  getStatusText(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'pending': 'En attente',
+      'shipped': 'Expédiée',
+      'delivered': 'Livrée',
+      'cancelled': 'Annulée'
+    };
+    return statusMap[status] || status;
+  }
+
+  getPendingOrders() {
+    return this.allOrders.filter(order => order.status === 'pending');
+  }
+
   async downloadInvoice(order: any) {
     try {
       // Import dynamique de jsPDF pour éviter les erreurs SSR
@@ -594,44 +608,6 @@ export class AccountHome implements OnInit {
       } catch (error) {
         console.error('Erreur lors du nettoyage forcé:', error);
         this.notification.showMessage('Erreur lors du nettoyage forcé', 'error');
-      }
-    }
-  }
-
-  // Méthode de nettoyage nucléaire
-  nuclearCleanup() {
-    if (confirm('💥 ATTENTION NUCLÉAIRE ! Cela va supprimer TOUTES les données de commandes de votre navigateur. Êtes-vous sûr ?')) {
-      try {
-        // Appeler le nettoyage ultra-agressif du service
-        this.orderService.ultraForceCleanup();
-        
-        // Nettoyage manuel supplémentaire
-        const allKeys = Object.keys(localStorage);
-        const orderKeys = allKeys.filter(key => 
-          key.toLowerCase().includes('order') || 
-          key.toLowerCase().includes('commande') ||
-          key.toLowerCase().includes('afrimarket')
-        );
-        
-        orderKeys.forEach(key => {
-          localStorage.removeItem(key);
-          console.log(`💥 NUCLÉAIRE: Supprimé ${key}`);
-        });
-        
-        // Vider le tableau local
-        this.orders = [];
-        
-        console.log('💥 NETTOYAGE NUCLÉAIRE EFFECTUÉ');
-        this.notification.showMessage('Nettoyage nucléaire effectué ! Toutes les anciennes commandes supprimées.', 'success');
-        
-        // Recharger la page après 2 secondes
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-        
-      } catch (error) {
-        console.error('Erreur lors du nettoyage nucléaire:', error);
-        this.notification.showMessage('Erreur lors du nettoyage nucléaire', 'error');
       }
     }
   }

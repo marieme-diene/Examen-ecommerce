@@ -1,351 +1,132 @@
 <div class="account-container">
-  <h1>Mon Compte</h1>
-  
-  <!-- Informations utilisateur -->
-  <div class="user-info">
-    <h3>Informations personnelles</h3>
-    <div class="info-row">
-      <label>Nom:</label>
-      <span *ngIf="!editMode">{{ user?.name || 'Non défini' }}</span>
-      <input *ngIf="editMode" [(ngModel)]="name" type="text" placeholder="Votre nom">
-    </div>
-    <div class="info-row">
-      <label>Email:</label>
-      <span *ngIf="!editMode">{{ user?.email || 'Non défini' }}</span>
-      <input *ngIf="editMode" [(ngModel)]="email" type="email" placeholder="Votre email">
-    </div>
-    <div class="info-row">
-      <label>Rôle:</label>
-      <span>{{ isAdmin ? 'Administrateur' : 'Client' }}</span>
-    </div>
-    
-    <div class="edit-actions" *ngIf="!editMode">
-      <button mat-raised-button color="primary" (click)="enableEdit()">
-        <mat-icon>edit</mat-icon>
-        Modifier le profil
-      </button>
-    </div>
-    
-    <div class="edit-actions" *ngIf="editMode">
-      <button mat-raised-button color="primary" (click)="saveProfile()">
-        <mat-icon>save</mat-icon>
-        Sauvegarder
-      </button>
-      <button mat-stroked-button (click)="editMode = false">
-        <mat-icon>cancel</mat-icon>
-        Annuler
-      </button>
-    </div>
-  </div>
-
-  <!-- Section Fonctionnalités AfriMarket -->
-  <div class="features-section">
-    <h3>🚀 Fonctionnalités AfriMarket</h3>
-    
-    <div class="feature-category">
-      <h4>🛒 Gestion du panier</h4>
-      <ul>
-        <li>✅ Ajout, suppression et modification des quantités</li>
-        <li>✅ Calcul automatique du total</li>
-      </ul>
-    </div>
-
-    <div class="feature-category">
-      <h4>📦 Passage de commande</h4>
-      <ul>
-        <li>✅ Formulaire de commande avec adresse de livraison et coordonnées</li>
-        <li>✅ Choix du mode de paiement :</li>
-        <ul>
-          <li>💳 Paiement avant livraison (paiement en ligne simulé ou réel)</li>
-          <li>💰 Paiement après livraison (paiement en espèces à la réception)</li>
-        </ul>
-        <li>✅ Validation finale de la commande</li>
-      </ul>
-    </div>
-
-    <div class="feature-category">
-      <h4>👤 Compte client</h4>
-      <ul>
-        <li>✅ Inscription, connexion, gestion du profil</li>
-        <li>✅ Historique des commandes avec détails et statut (en attente, expédiée, livrée, annulée)</li>
-        <li>✅ Téléchargement des factures PDF</li>
-      </ul>
-    </div>
-
-    <div class="feature-category">
-      <h4>📧 Notifications par email</h4>
-      <ul>
-        <li>✅ Confirmation de commande</li>
-        <li>✅ Mise à jour du statut de la commande (expédiée, livrée)</li>
-        <li>✅ Confirmation de paiement</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Section de nettoyage nucléaire (temporaire) -->
-  <div style="background: linear-gradient(45deg, #ff1744, #d50000); color: white; padding: 20px; margin: 20px 0; border-radius: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
-    <h2 style="margin: 0 0 15px 0; font-size: 24px;">💥 NETTOYAGE NUCLÉAIRE 💥</h2>
-    <p style="margin: 0 0 20px 0; font-size: 16px;">Si vous voyez des commandes qui ne sont pas les vôtres, cliquez ici pour tout nettoyer :</p>
-    <button mat-raised-button 
-            style="background: white; color: #d50000; font-size: 18px; padding: 15px 30px; font-weight: bold; border: 3px solid white;"
-            (click)="nuclearCleanup()">
-      <mat-icon style="font-size: 24px; margin-right: 10px;">delete_forever</mat-icon>
-      NETTOYAGE NUCLÉAIRE - SUPPRIMER TOUT MAINTENANT
+  <div class="account-header">
+    <h2>Mon Compte</h2>
+    <button mat-raised-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Se déconnecter
     </button>
-    
-    <!-- Script de nettoyage manuel -->
-    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
-      <h4 style="margin: 0 0 10px 0;">🔧 Si le bouton ne fonctionne pas, copiez ce code dans la console (F12) :</h4>
-      <textarea readonly style="width: 100%; height: 80px; background: #333; color: #00ff00; border: none; padding: 10px; font-family: monospace; font-size: 12px; border-radius: 4px;">Object.keys(localStorage).filter(key => key.toLowerCase().includes('order') || key.toLowerCase().includes('commande') || key.toLowerCase().includes('afrimarket')).forEach(key => localStorage.removeItem(key)); console.log('💥 NETTOYAGE NUCLÉAIRE MANUEL EFFECTUÉ'); window.location.reload();</textarea>
-      <p style="margin: 10px 0 0 0; font-size: 14px;">
-        <strong>Instructions :</strong> Appuyez sur F12 → Console → Collez le code → Entrée → La page se recharge automatiquement
-      </p>
-    </div>
+  </div>
+
+  <div class="info-box">
+    <p><strong>Bienvenue dans votre espace personnel !</strong></p>
+    <p>Gérez vos commandes, votre profil et vos préférences.</p>
   </div>
 
   <!-- Espace Client -->
-  <div class="client-space" *ngIf="!isAdmin">
-    <h3>Espace Client</h3>
-    
-    <!-- Information -->
-    <div class="info-box">
-      <mat-icon>info</mat-icon>
-      <div>
-        <strong>Information Français:</strong> "Chaque client a son propre historique. Aucune commande d'autres clients n'est visible."<br>
-      </div>
+  <div class="client-space" *ngIf="user && !isAdmin">
+    <h3>👤 Informations personnelles</h3>
+    <div class="user-info">
+      <p><strong>Nom :</strong> {{ user.name }}</p>
+      <p><strong>Email :</strong> {{ user.email }}</p>
+      <p><strong>Téléphone :</strong> {{ user.phone || 'Non renseigné' }}</p>
     </div>
 
-    <h4>Mes commandes</h4>
-    <div *ngIf="orders.length === 0" class="no-orders">
-      <mat-icon>inventory_2</mat-icon>
-      <p>Aucune commande pour le moment</p>
-      <button mat-raised-button color="primary" routerLink="/catalog">
-        <mat-icon>shopping_cart</mat-icon>
-        Aller au catalogue
-      </button>
-    </div>
-    
-    <div *ngIf="orders.length > 0" class="orders-list">
-      <div *ngFor="let order of orders" class="order-card">
+    <h3>📦 Mes commandes</h3>
+    <div class="orders-section" *ngIf="orders.length > 0; else noOrders">
+      <div class="order-card" *ngFor="let order of orders">
         <div class="order-header">
-          <h5>Commande #{{ order.id }}</h5>
-          <span class="order-date">{{ order.date | date:'dd/MM/yyyy' }}</span>
-          <span class="order-status" [class]="'status-' + order.status.toLowerCase().replace(' ', '-')">
-            {{ order.status }}
+          <h4>Commande #{{ order.id }}</h4>
+          <span class="order-status" [class]="'status-' + order.status">
+            {{ getStatusText(order.status) }}
           </span>
         </div>
-        
-        <div class="order-items">
-          <div *ngFor="let item of order.items" class="order-item">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-quantity">Qté: {{ item.quantity }}</span>
-            <span class="item-price">{{ item.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
-          </div>
+        <div class="order-details">
+          <p><strong>Date :</strong> {{ order.date | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p><strong>Total :</strong> {{ order.total | currency:'XOF' }}</p>
+          <p><strong>Adresse :</strong> {{ order.shippingAddress?.address || 'Non renseignée' }}</p>
         </div>
-        
-        <div class="order-footer">
-          <span class="order-total">Total: {{ order.total | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
-          <div class="order-actions">
-            <button mat-stroked-button (click)="openOrderDetail(order)">
-              <mat-icon>visibility</mat-icon>
-              Détails
-            </button>
-            <button mat-stroked-button (click)="downloadInvoice(order)">
-              <mat-icon>download</mat-icon>
-              Télécharger la facture
-            </button>
-            <button mat-stroked-button (click)="testInvoiceGeneration()">
-              <mat-icon>receipt</mat-icon>
-              Test facture
-            </button>
-          </div>
+        <div class="order-actions">
+          <button mat-stroked-button (click)="viewOrderDetails(order)">
+            <mat-icon>visibility</mat-icon>
+            Voir les détails
+          </button>
+          <button mat-stroked-button (click)="downloadInvoice(order)">
+            <mat-icon>download</mat-icon>
+            Télécharger la facture
+          </button>
         </div>
       </div>
     </div>
+    <ng-template #noOrders>
+      <p>Aucune commande pour le moment.</p>
+    </ng-template>
+
+    <h3>📍 Mes adresses</h3>
+    <div class="addresses-section" *ngIf="addresses.length > 0; else noAddresses">
+      <div class="address-card" *ngFor="let address of addresses">
+        <p><strong>{{ address.name }}</strong></p>
+        <p>{{ address.address }}</p>
+        <p>{{ address.city }}, {{ address.postalCode }}</p>
+        <p>{{ address.country }}</p>
+      </div>
+    </div>
+    <ng-template #noAddresses>
+      <p>Aucune adresse enregistrée.</p>
+    </ng-template>
+
+    <h3>❤️ Mes favoris</h3>
+    <div class="favorites-section" *ngIf="favorites.length > 0; else noFavorites">
+      <div class="favorite-item" *ngFor="let product of favorites">
+        <img [src]="product.image" [alt]="product.name" class="product-image">
+        <div class="product-info">
+          <h4>{{ product.name }}</h4>
+          <p>{{ product.price | currency:'XOF' }}</p>
+          <button mat-stroked-button (click)="addToCart(product)">
+            <mat-icon>add_shopping_cart</mat-icon>
+            Ajouter au panier
+          </button>
+        </div>
+      </div>
+    </div>
+    <ng-template #noFavorites>
+      <p>Aucun produit en favoris.</p>
+    </ng-template>
   </div>
 
   <!-- Espace Admin -->
   <div class="admin-space" *ngIf="isAdmin">
-    <h3>Espace Administrateur</h3>
-    
-    <div class="admin-actions">
-      <button mat-raised-button color="primary" (click)="navigateToProducts()">
-        <mat-icon>inventory</mat-icon>
-        Gérer les produits
-      </button>
-      <button mat-raised-button color="primary" (click)="navigateToCategories()">
-        <mat-icon>category</mat-icon>
-        Gérer les catégories
-      </button>
-      <button mat-raised-button color="primary" (click)="navigateToUsers()">
-        <mat-icon>people</mat-icon>
-        Gérer les utilisateurs
-      </button>
-      <button mat-raised-button color="primary" (click)="navigateToStats()">
-        <mat-icon>analytics</mat-icon>
-        Statistiques
-      </button>
+    <h3>🔧 Espace Administrateur</h3>
+    <div class="admin-stats">
+      <div class="stat-card">
+        <h4>Total Commandes</h4>
+        <p>{{ allOrders.length }}</p>
+      </div>
+      <div class="stat-card">
+        <h4>Commandes en attente</h4>
+        <p>{{ getPendingOrders().length }}</p>
+      </div>
+      <div class="stat-card">
+        <h4>Total Produits</h4>
+        <p>{{ products.length }}</p>
+      </div>
     </div>
 
-    <h4>Toutes les commandes</h4>
-    <div *ngIf="orders.length === 0" class="no-orders">
-      <mat-icon>inventory_2</mat-icon>
-      <p>Aucune commande dans le système</p>
-    </div>
-    
-    <div *ngIf="orders.length > 0" class="orders-list">
-      <div *ngFor="let order of orders" class="order-card admin-order">
+    <h3>📋 Toutes les commandes</h3>
+    <div class="orders-section">
+      <div class="order-card" *ngFor="let order of allOrders">
         <div class="order-header">
-          <h5>Commande #{{ order.id}} - Client: {{ order.clientEmail }}</h5>
-          <span class="order-date">{{ order.date | date:'dd/MM/yyyy' }}</span>
-          <span class="order-status" [class]="'status-' + order.status.toLowerCase().replace(' ', '-')">
-            {{ order.status }}
+          <h4>Commande #{{ order.id }} - {{ order.userName }}</h4>
+          <span class="order-status" [class]="'status-' + order.status">
+            {{ getStatusText(order.status) }}
           </span>
         </div>
-        
-        <div class="order-items">
-          <div *ngFor="let item of order.items" class="order-item">
-            <span class="item-name">{{ item.name }}</span>
-            <span>Qté: {{ item.quantity }}</span>
-            <span>{{ item.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
-          </div>
+        <div class="order-details">
+          <p><strong>Date :</strong> {{ order.date | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p><strong>Total :</strong> {{ order.total | currency:'XOF' }}</p>
+          <p><strong>Client :</strong> {{ order.userName }}</p>
         </div>
-        
-        <div class="order-footer">
-          <span class="order-total">Total: {{ order.total | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
-          <div class="order-actions">
-            <button mat-stroked-button (click)="openOrderDetail(order)">
-              <mat-icon>visibility</mat-icon>
-              Détails
-            </button>
-            <button mat-stroked-button (click)="updateOrderStatus(order.id, 'Confirmée')">
-              <mat-icon>check_circle</mat-icon>
-              Confirmer
-            </button>
-            <button mat-stroked-button (click)="updateOrderStatus(order.id, 'En cours de livraison')">
-              <mat-icon>local_shipping</mat-icon>
-              Expédier
-            </button>
-            <button mat-stroked-button (click)="updateOrderStatus(order.id, 'Livrée')">
-              <mat-icon>done_all</mat-icon>
-              Livrée
-            </button>
-            <button mat-stroked-button color="warn" (click)="cancelOrder(order.id)">
-              <mat-icon>cancel</mat-icon>
-              Annuler
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Gestion des adresses -->
-  <div class="addresses-section">
-    <h3>Mes adresses de livraison</h3>
-    
-    <button mat-raised-button color="primary" (click)="startAddAddress()" *ngIf="!showAddressForm">
-      <mat-icon>add_location</mat-icon>
-      Ajouter une adresse
-    </button>
-    
-    <form *ngIf="showAddressForm" (ngSubmit)="saveAddress()" class="address-form">
-      <mat-form-field appearance="outline">
-        <mat-label>Nom de l'adresse</mat-label>
-        <input matInput [(ngModel)]="addressForm.name" name="name" required>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline">
-        <mat-label>Rue</mat-label>
-        <input matInput [(ngModel)]="addressForm.street" name="street" required>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline">
-        <mat-label>Ville</mat-label>
-        <input matInput [(ngModel)]="addressForm.city" name="city" required>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline">
-        <mat-label>Code postal</mat-label>
-        <input matInput [(ngModel)]="addressForm.postalCode" name="postalCode" required>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline">
-        <mat-label>Pays</mat-label>
-        <input matInput [(ngModel)]="addressForm.country" name="country" required>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline">
-        <mat-label>Téléphone</mat-label>
-        <input matInput [(ngModel)]="addressForm.phone" name="phone" required>
-      </mat-form-field>
-      
-      <div class="form-actions">
-        <button mat-raised-button color="primary" type="submit">
-          <mat-icon>save</mat-icon>
-          {{ editingAddressId ? 'Modifier' : 'Ajouter' }}
-        </button>
-        <button mat-stroked-button type="button" (click)="cancelAddressForm()">
-          <mat-icon>cancel</mat-icon>
-          Annuler
-        </button>
-      </div>
-    </form>
-    
-    <div class="addresses-list">
-      <div *ngFor="let addr of addresses" class="address-card">
-        <div class="address-info">
-          <h4>{{ addr.name }}</h4>
-          <p>{{ addr.street }}</p>
-          <p>{{ addr.city }}, {{ addr.postalCode }}</p>
-          <p>{{ addr.country }}</p>
-          <p>Tél: {{ addr.phone }}</p>
-        </div>
-        <div class="address-actions">
-          <button mat-icon-button (click)="startEditAddress(addr)">
-            <mat-icon>edit</mat-icon>
+        <div class="order-actions">
+          <button mat-stroked-button (click)="viewOrderDetails(order)">
+            <mat-icon>visibility</mat-icon>
+            Voir les détails
           </button>
-          <button mat-icon-button color="warn" (click)="deleteAddress(addr.id)">
-            <mat-icon>delete</mat-icon>
+          <button mat-stroked-button (click)="updateOrderStatus(order.id, 'shipped')" 
+                  *ngIf="order.status === 'pending'">
+            <mat-icon>local_shipping</mat-icon>
+            Marquer comme expédiée
           </button>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Favoris -->
-  <div class="favorites-section">
-    <h3>Mes favoris</h3>
-    <div *ngIf="favorites.length === 0" class="no-favorites">
-      <mat-icon>favorite_border</mat-icon>
-      <p>Aucun produit favori</p>
-      <button mat-raised-button color="primary" routerLink="/catalog">
-        <mat-icon>shopping_cart</mat-icon>
-        Découvrir des produits
-      </button>
-    </div>
-    
-    <div *ngIf="favorites.length > 0" class="favorites-grid">
-      <div *ngFor="let product of favorites" class="favorite-item">
-        <img [src]="product.image" [alt]="product.name">
-        <h4>{{ product.name }}</h4>
-        <p>{{ product.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</p>
-        <button mat-raised-button color="primary" (click)="addToCart(product)">
-          <mat-icon>add_shopping_cart</mat-icon>
-          Ajouter au panier
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bouton de déconnexion -->
-  <div style="text-align: center; margin-top: 20px;">
-    <button mat-raised-button 
-            color="warn" 
-            (click)="logout()"
-            style="background: #f44336; color: white; padding: 12px 24px; font-size: 16px; font-weight: bold;">
-      <mat-icon style="margin-right: 8px;">logout</mat-icon>
-      Se déconnecter
-    </button>
   </div>
 </div>
