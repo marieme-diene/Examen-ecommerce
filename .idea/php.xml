@@ -129,9 +129,20 @@
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/nikic/php-parser" />
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/dompdf/php-font-lib" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/dompdf/php-svg-lib" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/laravel/pail" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/barryvdh/laravel-dompdf" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/league/uri-interfaces" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/league/uri" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/staabm/side-effects-detector" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/symfony/clock" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>

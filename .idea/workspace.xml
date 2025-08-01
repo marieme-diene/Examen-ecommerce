@@ -4,7 +4,74 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="695f98da-057a-4438-9e4d-ba2b59ea28e5" name="Changes" comment="" />
+    <list default="true" id="695f98da-057a-4438-9e4d-ba2b59ea28e5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ecommerce-platformfrontend/src/app/shared/services/api.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ecommerce-platformfrontend/src/app/shared/services/http.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ecommerce-platformfrontend/src/environments/environment.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Console/Kernel.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Exceptions/Handler.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Controllers/Controller.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Controllers/Controller.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Kernel.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/Authenticate.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/EncryptCookies.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/PreventRequestsDuringMaintenance.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/RedirectIfAuthenticated.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/TrimStrings.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/TrustHosts.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/TrustProxies.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/ValidateSignature.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Http/Middleware/VerifyCsrfToken.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/app/Models/User.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/AppServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/AppServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/AuthServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/AuthServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/BroadcastServiceProvider.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/EventServiceProvider.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/RouteServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/app/Providers/RouteServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/artisan" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/artisan" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/bootstrap/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/bootstrap/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/auth.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/auth.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/broadcasting.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/cache.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/cache.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/cors.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/cors.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/database.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/filesystems.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/filesystems.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/hashing.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/logging.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/logging.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/mail.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/mail.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/queue.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/queue.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/sanctum.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/sanctum.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/services.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/session.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/config/session.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/config/view.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/database/migrations/2014_10_12_000000_create_users_table.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/database/migrations/2014_10_12_100000_create_password_reset_tokens_table.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/database/migrations/2019_08_19_000000_create_failed_jobs_table.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/database/seeders/DatabaseSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/database/seeders/DatabaseSeeder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/phpunit.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/phpunit.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/public/.htaccess" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/public/.htaccess" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/public/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/public/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/resources/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/resources/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/resources/js/bootstrap.js" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/resources/js/bootstrap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/resources/views/welcome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/resources/views/welcome.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/routes/channels.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/routes/console.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/routes/console.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/storage/app/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/storage/app/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/tests/CreatesApplication.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/tests/TestCase.php" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/tests/TestCase.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ecommerce-patformbackend/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/ecommerce-patformbackend/vite.config.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,10 +81,17 @@
     <pharConfigPath>$PROJECT_DIR$/ecommerce-patformbackend/composer.json</pharConfigPath>
     <execution />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\laragon\bin\php\php-8.1.10-Win32-vs16-x64\php.exe">
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\Users\LENOVO T14\.config\herd-lite\bin\php.exe">
     <include_path>
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/league/config" />
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/league/mime-type-detection" />
@@ -131,32 +205,45 @@
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/nikic/php-parser" />
       <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/dompdf/php-font-lib" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/dompdf/php-svg-lib" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/laravel/pail" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/barryvdh/laravel-dompdf" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/league/uri-interfaces" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/league/uri" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/staabm/side-effects-detector" />
+      <path value="$PROJECT_DIR$/ecommerce-patformbackend/vendor/symfony/clock" />
     </include_path>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
   <component name="ProjectId" id="2zruJ7CA62iYYiIpfXxirwBguG9" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;4f4ca2c4&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/wamp64_/www/Examen-ecommerce",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "C:\\wamp64_\\www\\Examen-ecommerce\\ecommerce-platformfrontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Main" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner configuration_file="$PROJECT_DIR$/ecommerce-patformbackend/phpunit.xml" scope="XML" use_alternative_configuration_file="true" />
@@ -166,8 +253,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PS-243.26053.13" />
-        <option value="bundled-php-predefined-a98d8de5180a-1ec7b7818973-com.jetbrains.php.sharedIndexes-PS-243.26053.13" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PS-251.27812.52" />
+        <option value="bundled-php-predefined-a98d8de5180a-e5747d4f5a45-com.jetbrains.php.sharedIndexes-PS-251.27812.52" />
       </set>
     </attachedChunks>
   </component>
@@ -181,6 +268,8 @@
       <updated>1752501439682</updated>
       <workItem from="1752501440336" duration="796000" />
       <workItem from="1752502301470" duration="2392000" />
+      <workItem from="1754052179428" duration="425000" />
+      <workItem from="1754052622730" duration="3090000" />
     </task>
     <servers />
   </component>
