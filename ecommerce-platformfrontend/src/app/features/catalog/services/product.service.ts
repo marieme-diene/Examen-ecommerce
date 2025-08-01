@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../models/product.model';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { ReviewService } from './review.service';
 
 // Vérification de l'environnement
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -10,7 +12,7 @@ export class ProductService {
   private storageKey = 'products';
   private products: Product[] = [];
 
-  constructor() {
+  constructor(private reviewService: ReviewService) {
     if (isBrowser) {
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
@@ -95,7 +97,22 @@ export class ProductService {
   }
 
   getProducts(): Observable<Product[]> {
-    return of(this.products);
+    return this.reviewService.getReviews().pipe(
+      map(reviews => {
+        return this.products.map(product => {
+          const productReviews = reviews.filter(review => review.productId === product.id);
+          const averageRating = productReviews.length > 0 
+            ? productReviews.reduce((sum, review) => sum + review.rating, 0) / productReviews.length
+            : 0;
+          
+          return {
+            ...product,
+            averageRating: Math.round(averageRating * 10) / 10,
+            totalReviews: productReviews.length
+          };
+        });
+      })
+    );
   }
 
   getProductById(id: number): Observable<Product | undefined> {

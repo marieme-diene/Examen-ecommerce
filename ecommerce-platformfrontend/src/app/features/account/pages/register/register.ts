@@ -27,7 +27,7 @@ export class Register {
       if (user) {
         this.router.navigate(['/account']);
       } else {
-        this.error = 'Erreur lors de la création du compte';
+        this.error = 'Cet email est déjà utilisé. Veuillez utiliser un autre email ou vous connecter.';
       }
     });
   }

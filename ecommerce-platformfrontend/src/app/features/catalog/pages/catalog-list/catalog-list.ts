@@ -6,14 +6,21 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { ProductCard } from '../../components/product-card/product-card';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../account/services/auth.service';
+import { FavoritesService } from '../../services/favorites.service';
+import { AdvancedFilters } from '../../components/advanced-filters/advanced-filters';
+import { AdvancedFiltersService, FilterCriteria } from '../../services/advanced-filters.service';
+import { CartService } from '../../../cart/services/cart.service';
 
 @Component({
   selector: 'app-catalog-list',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -22,7 +29,10 @@ import { AuthService } from '../../../account/services/auth.service';
     MatIconModule,
     MatSelectModule,
     MatButtonModule,
-    ProductCard
+    MatCardModule,
+    MatExpansionModule,
+    ProductCard,
+    AdvancedFilters
   ],
   templateUrl: './catalog-list.html',
   styleUrl: './catalog-list.css'
@@ -33,13 +43,13 @@ export class CatalogList {
   paginatedProducts: Product[] = [];
   categories: string[] = [
     'Électronique', 'Mode', 'Maison', 'Beauté', 'Sport', 'Livres',
-    'Chaussures femme', 'Serviette', 'Bijoux', 'Table'
+    'Chaussures femme', 'Serviette', 'Bijoux', 'Table', 'Mobilier', 'Électroménager'
   ];
   search = '';
   searchTerm = '';
   selectedCategory = '';
 
-  // Favoris (local)
+  // Favoris (utilise le service)
   favorites: Set<number> = new Set();
 
   // Pour affichage par marque
@@ -60,17 +70,30 @@ export class CatalogList {
   messageType: 'success' | 'error' | 'info' = 'info';
   isAdmin = false;
 
+  // Filtres avancés
+  showAdvancedFilters = false;
+  filterStats: any = null;
+
   constructor(
     private productService: ProductService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private favoritesService: FavoritesService,
+    private advancedFiltersService: AdvancedFiltersService,
+    private cartService: CartService
   ) {
     this.loading = true;
     this.isAdmin = this.authService.isAdmin();
+    
+    // S'abonner aux changements de favoris
+    this.favoritesService.favorites$.subscribe(favorites => {
+      this.favorites = favorites;
+    });
+    
     this.productService.getProducts().subscribe(products => {
       this.products = products;
-      this.applyFilters();
+      this.setupAdvancedFilters();
       this.loading = false;
     });
   }
@@ -201,10 +224,16 @@ export class CatalogList {
   }
 
   toggleFavorite(productId: number) {
-    if (this.favorites.has(productId)) {
-      this.favorites.delete(productId);
+    const product = this.products.find(p => p.id === productId);
+    const productName = product ? product.name : 'Produit';
+    
+    this.favoritesService.toggleFavorite(productId);
+    
+    // Afficher un message de confirmation
+    if (this.favoritesService.isFavorite(productId)) {
+      this.showMessage(`${productName} ajouté aux favoris`, 'success');
     } else {
-      this.favorites.add(productId);
+      this.showMessage(`${productName} retiré des favoris`, 'info');
     }
   }
 
@@ -223,5 +252,39 @@ export class CatalogList {
       console.log('Suppression de la marque:', brand);
       // Ici on pourrait supprimer tous les produits de cette marque
     }
+  }
+
+  setupAdvancedFilters() {
+    // Extraire les catégories et marques uniques des produits
+    const uniqueCategories = [...new Set(this.products.map(p => p.category))].sort();
+    const uniqueBrands = [...new Set(this.products.map(p => p.brand))].sort();
+    
+    // Mettre à jour les statistiques des filtres
+    this.advancedFiltersService.getFilterStats(this.products).subscribe(stats => {
+      this.filterStats = stats;
+    });
+  }
+
+  toggleAdvancedFilters() {
+    this.showAdvancedFilters = !this.showAdvancedFilters;
+  }
+
+  onFiltersChanged(criteria: FilterCriteria) {
+    this.advancedFiltersService.applyFilters(this.products).subscribe(filteredProducts => {
+      this.filteredProducts = filteredProducts;
+      this.updatePaginatedProducts();
+      this.groupByBrand();
+      
+      if (this.filteredProducts.length === 0) {
+        this.showMessage('Aucun produit trouvé avec ces critères.', 'info');
+      } else {
+        this.showMessage(`${this.filteredProducts.length} produit(s) trouvé(s).`, 'success');
+      }
+    });
+  }
+
+  addToCart(product: Product) {
+    this.cartService.addToCart(product);
+    this.showMessage(`${product.name} ajouté au panier !`, 'success');
   }
 }

@@ -94,6 +94,156 @@
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   z-index: 3;
 }
+/* Section notation du produit */
+.product-rating-section {
+  margin: 16px 0;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.rating-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.rating-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rating-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rating-label {
+  min-width: 80px;
+  font-size: 12px;
+  color: #666;
+}
+
+.rating-bar-container {
+  flex: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rating-bar-fill {
+  height: 100%;
+  background: #ffc107;
+  transition: width 0.3s ease;
+}
+
+.rating-count-small {
+  min-width: 30px;
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+}
+
+/* Section des avis */
+.reviews-section {
+  margin-top: 32px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reviews-section h2 {
+  margin-bottom: 24px;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.login-message {
+  text-align: center;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.already-reviewed {
+  text-align: center;
+  padding: 16px;
+  background: #e3f2fd;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  color: #1976d2;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-item {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reviewer-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.review-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.review-comment {
+  margin: 8px 0;
+  line-height: 1.5;
+  color: #333;
+}
+
+.verified-badge {
+  display: inline-block;
+  background: #4caf50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.no-reviews {
+  text-align: center;
+  padding: 32px;
+  color: #666;
+  font-style: italic;
+}
+
 @media (max-width: 900px) {
   .product-detail-container {
     flex-direction: column;
@@ -108,4 +258,28 @@
   }
   .carousel-arrow.left { left: 0; }
   .carousel-arrow.right { right: 0; }
+}
+
+@media (max-width: 768px) {
+  .rating-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .rating-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .rating-label {
+    min-width: auto;
+  }
 } 

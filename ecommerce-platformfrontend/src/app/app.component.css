@@ -284,6 +284,44 @@
   color: white;
 }
 
+/* Badge des notifications */
+.notification-badge {
+  margin-right: 16px;
+}
+
+.notification-badge .notification-btn {
+  color: #666;
+  transition: color 0.2s;
+}
+
+.notification-badge .notification-btn:hover {
+  color: #2563eb;
+}
+
+/* Amélioration du style du header */
+.afrimarket-header {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.afrimarket-header .mat-toolbar {
+  background: transparent;
+  color: white;
+}
+
+.afrimarket-header-btn {
+  color: white !important;
+  border-color: rgba(255,255,255,0.3) !important;
+  transition: all 0.3s ease;
+}
+
+.afrimarket-header-btn:hover {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.5) !important;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .footer-top-row {
@@ -305,6 +343,14 @@
   
   .afrimarket-search input {
     width: 200px;
+  }
+
+  .notification-badge {
+    margin-right: 8px;
+  }
+  
+  .afrimarket-header {
+    padding: 0 16px;
   }
 }
 

@@ -5,6 +5,7 @@
       <a mat-list-item routerLink="/catalog">Catalogue</a>
       <a mat-list-item routerLink="/cart">Panier</a>
       <a mat-list-item routerLink="/account">Mon Compte</a>
+      <a mat-list-item routerLink="/account/favorites">❤️ Mes Favoris</a>
       <a mat-list-item routerLink="/account/register">Créer un compte</a>
       <a mat-list-item routerLink="/admin" *ngIf="canAccessAdmin()">Admin</a>
       
@@ -28,64 +29,51 @@
       <span class="afrimarket-logo">AfriMarket</span>
       <span class="spacer"></span>
       <form class="afrimarket-search" (submit)="onHeaderSearch($event)">
-        <input type="text" placeholder="Recherche" [(ngModel)]="headerSearch" name="headerSearch" />
-        <button type="submit" class="afrimarket-search-btn">Rechercher</button>
+        <input type="text" [(ngModel)]="headerSearch" name="headerSearch" placeholder="Recherche" class="search-input">
+        <button type="submit" class="search-btn">Rechercher</button>
       </form>
+      <span class="spacer"></span>
       
-      <!-- Bouton de déconnexion flottant pour utilisateurs connectés -->
-      <button *ngIf="authService.getUser()" 
-              mat-fab 
-              color="warn" 
-              (click)="logout()"
-              style="position: fixed; top: 10px; right: 10px; z-index: 1000; background: #f44336; color: white;"
-              matTooltip="Se déconnecter">
-        <mat-icon>logout</mat-icon>
+      <!-- Badge des favoris -->
+      <div class="favorites-badge" *ngIf="favoritesCount > 0">
+        <span class="favorites-count">{{ favoritesCount }}</span>
+      </div>
+      
+      <!-- Badge des notifications -->
+      <button mat-icon-button (click)="onNotificationClick()" class="notification-badge">
+        <mat-icon>notifications</mat-icon>
       </button>
       
-      <!-- Affichage conditionnel : utilisateur connecté ou bouton de connexion -->
-      <ng-container *ngIf="authService.getUser(); else loginButton">
+      <div class="user-menu" *ngIf="authService.getUser(); else loginLink">
         <button mat-stroked-button class="afrimarket-header-btn" [matMenuTriggerFor]="userMenu">
           <mat-icon>person</mat-icon>
-          {{ authService.getUser()?.name || 'Mon Compte' }}
-          <mat-icon>arrow_drop_down</mat-icon>
+          Bonjour, {{ authService.getUser()?.name || 'Utilisateur' }}
         </button>
         <mat-menu #userMenu="matMenu">
           <button mat-menu-item routerLink="/account">
-            <mat-icon>person_outline</mat-icon>
-            <span>Mon Compte</span>
-          </button>
-          <button mat-menu-item routerLink="/account/orders">
-            <mat-icon>inventory_2</mat-icon>
-            <span>Mes commandes</span>
+            <mat-icon>account_circle</mat-icon>
+            Mon Compte
           </button>
           <button mat-menu-item routerLink="/account/favorites">
-            <mat-icon>favorite_border</mat-icon>
-            <span>Favoris</span>
+            <mat-icon>favorite</mat-icon>
+            Mes Favoris
           </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()" style="color: #f44336;">
-            <mat-icon style="color: #f44336;">logout</mat-icon>
-            <span>Se déconnecter</span>
+          <button mat-menu-item routerLink="/account/notifications">
+            <mat-icon>notifications</mat-icon>
+            Notifications
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            Se déconnecter
           </button>
         </mat-menu>
-      </ng-container>
+      </div>
       
-      <ng-template #loginButton>
-        <button mat-stroked-button class="afrimarket-header-btn" [matMenuTriggerFor]="loginMenu">
-          <mat-icon>person</mat-icon>
+      <ng-template #loginLink>
+        <button mat-stroked-button routerLink="/account/login" class="afrimarket-header-btn">
+          <mat-icon>login</mat-icon>
           Se connecter
-          <mat-icon>arrow_drop_down</mat-icon>
         </button>
-        <mat-menu #loginMenu="matMenu">
-          <button mat-menu-item (click)="navigateToLogin()">
-            <mat-icon>login</mat-icon>
-            <span>Se connecter</span>
-          </button>
-          <button mat-menu-item routerLink="/account/register">
-            <mat-icon>person_add</mat-icon>
-            <span>Créer un compte</span>
-          </button>
-        </mat-menu>
       </ng-template>
       <button mat-icon-button class="afrimarket-header-btn" [matMenuTriggerFor]="helpMenu">
         <mat-icon>help_outline</mat-icon>

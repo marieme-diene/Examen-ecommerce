@@ -6,6 +6,17 @@
   <div class="product-info">
     <h3>{{ product.name }}</h3>
     <p>{{ product.description }}</p>
+    
+    <!-- Notation du produit -->
+    <div class="product-rating" *ngIf="product.averageRating && product.averageRating > 0">
+      <app-star-rating 
+        [rating]="product.averageRating" 
+        [readonly]="true" 
+        [showRating]="false">
+      </app-star-rating>
+      <span class="rating-count">({{ product.totalReviews }})</span>
+    </div>
+    
     <div class="product-price">{{ product.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</div>
     <button mat-raised-button color="primary" (click)="addToCart($event)">Ajouter au panier</button>
   </div>

@@ -35,7 +35,7 @@ export class OrderService {
     // Vérifier si on est côté client avant d'accéder à localStorage
     if (typeof window !== 'undefined' && window.localStorage) {
       // SUPPRESSION TOTALE AU DÉMARRAGE - FORCER LE NETTOYAGE
-      this.nuclearCleanup();
+      // this.nuclearCleanup(); // COMMENTÉ TEMPORAIREMENT
       this.loadOrdersFromStorage();
     } else {
       // Côté serveur, initialiser avec un tableau vide
@@ -145,13 +145,47 @@ export class OrderService {
   // Méthode pour s'assurer qu'un client ne voit que ses propres commandes
   getOrdersForUser(userId: number): Observable<Order[]> {
     // FORCER LE NETTOYAGE AVANT DE FILTRER
-    this.ultraForceCleanup();
+    // this.ultraForceCleanup(); // COMMENTÉ TEMPORAIREMENT
+    
+    // Forcer le rechargement depuis localStorage
     this.loadOrdersFromStorage();
     
-    // Filtrer strictement par userId pour éviter les commandes d'autres clients
-    const userOrders = this.orders.filter(order => order.userId === userId);
-    console.log(`🔒 Commandes filtrées pour l'utilisateur ${userId}:`, userOrders.length, 'commandes');
-    console.log('🔒 Chaque client voit uniquement ses propres commandes');
+    console.log(`🔍 DEBUG getOrdersForUser - userId: ${userId}`);
+    console.log(`📦 Commandes chargées depuis localStorage: ${this.orders.length}`);
+    
+    // Récupérer l'utilisateur actuel pour avoir son email
+    let currentUserEmail = '';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          currentUserEmail = user.email;
+          console.log(`👤 Utilisateur connecté: ${user.name} (${user.email})`);
+        } catch (e) {
+          console.error('❌ Erreur parsing user:', e);
+        }
+      }
+    }
+    
+    // Afficher toutes les commandes pour le débogage
+    console.log('📋 TOUTES LES COMMANDES DANS LE SYSTÈME:');
+    this.orders.forEach((order, index) => {
+      console.log(`   ${index + 1}. ID: ${order.id}, userId: ${order.userId}, clientEmail: ${order.clientEmail}, total: ${order.total}, items: ${order.items?.length || 0}`);
+    });
+    
+    // Filtrer par userId OU par clientEmail pour les nouveaux utilisateurs
+    const userOrders = this.orders.filter(order => 
+      order.userId === userId || order.clientEmail === currentUserEmail
+    );
+    
+    console.log(`🔒 Recherche commandes pour utilisateur ${userId} (${currentUserEmail}):`);
+    console.log(`   - Total commandes dans le système: ${this.orders.length}`);
+    console.log(`   - Commandes trouvées: ${userOrders.length}`);
+    userOrders.forEach((order, index) => {
+      console.log(`   - Commande ${index + 1}: ID=${order.id}, userId=${order.userId}, clientEmail=${order.clientEmail}, total=${order.total}`);
+    });
+    
     return of(userOrders);
   }
 

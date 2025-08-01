@@ -27,9 +27,40 @@
         </tr>
       </tbody>
     </table>
-    <div class="cart-total">
-      <span>Total :</span>
-      <span class="total-value">{{ cartService.getTotal() | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
+    <!-- Formulaire de code promo -->
+    <app-promo-code-form 
+      [cartItems]="cartService.getItems()" 
+      [userId]="userId"
+      (promotionApplied)="onPromotionApplied()">
+    </app-promo-code-form>
+
+    <!-- Résumé du panier avec promotions -->
+    <div class="cart-summary" *ngIf="cartWithPromotions">
+      <div class="summary-item">
+        <span>Sous-total :</span>
+        <span>{{ cartWithPromotions.subtotal | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
+      </div>
+      
+      <div class="summary-item discount" *ngIf="cartWithPromotions.discountAmount > 0">
+        <span>Réduction :</span>
+        <span>-{{ cartWithPromotions.discountAmount | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
+      </div>
+      
+      <div class="summary-item total">
+        <span>Total :</span>
+        <span class="total-value">{{ cartWithPromotions.finalAmount | currency:'FCFA':'symbol':'1.0-0':'fr' }}</span>
+      </div>
+
+      <!-- Promotions appliquées -->
+      <div class="applied-promotions" *ngIf="cartWithPromotions.appliedPromotions.length > 0">
+        <h4>Promotions appliquées :</h4>
+        <div class="promotion-tag" *ngFor="let promotion of cartWithPromotions.appliedPromotions">
+          <span>{{ promotion.name }}</span>
+          <button mat-icon-button (click)="promotionService.removePromotion(promotion.id)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
     <div class="cart-actions">
       <button mat-stroked-button color="warn" (click)="clear()">Vider le panier</button>

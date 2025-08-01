@@ -18,6 +18,7 @@ export interface PaymentRequest {
     cardCvv?: string;
     orangeNumber?: string;
     waveNumber?: string;
+    freeNumber?: string;
   };
 }
 
@@ -46,8 +47,8 @@ export class PaymentService {
         return this.processOrangeMoneyPayment(request);
       case 'wave':
         return this.processWavePayment(request);
-      case 'cash':
-        return this.processCashPayment(request);
+      case 'free':
+        return this.processFreeMoneyPayment(request);
       default:
         return throwError(() => new Error('Méthode de paiement non supportée'));
     }
@@ -107,6 +108,23 @@ export class PaymentService {
       success: true,
       transactionId: `WAVE_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       message: 'Notification Wave envoyée. Veuillez confirmer le paiement dans votre application Wave.',
+      status: 'pending' as const
+    }).pipe(delay(1000));
+  }
+
+  /**
+   * Traitement du paiement Free Money
+   */
+  private processFreeMoneyPayment(request: PaymentRequest): Observable<PaymentResponse> {
+    if (!this.validatePhoneNumber(request.paymentDetails.freeNumber || '')) {
+      return throwError(() => new Error('Numéro Free Money invalide'));
+    }
+
+    // Simulation de notification Free Money
+    return of({
+      success: true,
+      transactionId: `FREE_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      message: 'Notification Free Money envoyée. Veuillez confirmer le paiement dans votre application Free Money.',
       status: 'pending' as const
     }).pipe(delay(1000));
   }
@@ -213,16 +231,6 @@ export class PaymentService {
   getAvailablePaymentMethods(): Observable<any[]> {
     return of([
       {
-        id: 'card',
-        name: 'Carte bancaire',
-        icon: 'credit_card',
-        description: 'Visa, Mastercard, American Express',
-        color: '#2563eb',
-        instructions: 'Saisissez les informations de votre carte bancaire',
-        fees: 0,
-        processingTime: 'Immédiat'
-      },
-      {
         id: 'orange',
         name: 'Orange Money',
         icon: 'smartphone',
@@ -243,14 +251,24 @@ export class PaymentService {
         processingTime: '1-3 minutes'
       },
       {
-        id: 'cash',
-        name: 'Paiement à la livraison',
-        icon: 'local_shipping',
-        description: 'Payer en espèces lors de la livraison',
-        color: '#6c757d',
-        instructions: 'Vous paierez en espèces lors de la livraison de votre commande',
-        fees: 500, // Frais de livraison
-        processingTime: 'Lors de la livraison'
+        id: 'free',
+        name: 'Free Money',
+        icon: 'account_balance_wallet',
+        description: 'Paiement mobile Free',
+        color: '#00a651',
+        instructions: 'Vous recevrez une notification Free Money pour confirmer le paiement',
+        fees: 0,
+        processingTime: '2-5 minutes'
+      },
+      {
+        id: 'card',
+        name: 'Carte bancaire',
+        icon: 'credit_card',
+        description: 'Visa, Mastercard, American Express',
+        color: '#2563eb',
+        instructions: 'Saisissez les informations de votre carte bancaire',
+        fees: 0,
+        processingTime: 'Immédiat'
       }
     ]);
   }

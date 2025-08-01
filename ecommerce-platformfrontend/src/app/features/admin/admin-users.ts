@@ -41,6 +41,105 @@ interface UserWithStats extends User {
         <button class="close-btn" (click)="clearMessage()">×</button>
       </div>
 
+      <!-- Bouton Ajouter -->
+      <div class="add-user-section">
+        <button mat-stroked-button (click)="loadUsers()" matTooltip="Rafraîchir la liste">
+          <mat-icon>refresh</mat-icon>
+          Rafraîchir
+        </button>
+        <button mat-raised-button color="primary" (click)="showAddForm = true" *ngIf="!showAddForm">
+          <mat-icon>add</mat-icon>
+          Ajouter un utilisateur
+        </button>
+      </div>
+
+      <!-- Formulaire d'ajout -->
+      <mat-card *ngIf="showAddForm" class="add-form-card">
+        <mat-card-header>
+          <mat-card-title>Ajouter un nouvel utilisateur</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form (ngSubmit)="addUser()" class="add-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Nom</mat-label>
+                <input matInput [(ngModel)]="addForm.name" name="name" required>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput [(ngModel)]="addForm.email" name="email" type="email" required>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Mot de passe</mat-label>
+                <input matInput [(ngModel)]="addForm.password" name="password" type="password" required>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Rôle</mat-label>
+                <mat-select [(ngModel)]="addForm.role" name="role" required>
+                  <mat-option value="client">Client</mat-option>
+                  <mat-option value="admin">Administrateur</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit">
+                Ajouter
+              </button>
+              <button mat-stroked-button type="button" (click)="cancelAdd()">
+                Annuler
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Formulaire d'édition -->
+      <mat-card *ngIf="showEditForm" class="edit-form-card">
+        <mat-card-header>
+          <mat-card-title>Modifier l'utilisateur</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form (ngSubmit)="saveUser()" class="edit-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Nom</mat-label>
+                <input matInput [(ngModel)]="editForm.name" name="name" required>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput [(ngModel)]="editForm.email" name="email" type="email" required>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Rôle</mat-label>
+                <mat-select [(ngModel)]="editForm.role" name="role" required>
+                  <mat-option value="client">Client</mat-option>
+                  <mat-option value="admin">Administrateur</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit">
+                Enregistrer
+              </button>
+              <button mat-stroked-button type="button" (click)="cancelEdit()">
+                Annuler
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Statistiques -->
       <div class="stats-grid">
         <mat-card class="stat-card">
@@ -186,6 +285,25 @@ interface UserWithStats extends User {
       color: inherit;
     }
     
+    .add-user-section {
+      margin-bottom: 24px;
+      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+    }
+
+    .add-form-card {
+      margin-bottom: 24px;
+      border: 2px solid #10b981;
+    }
+
+    .add-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -315,6 +433,36 @@ interface UserWithStats extends User {
       gap: 8px;
     }
     
+    .edit-form-card {
+      margin-bottom: 24px;
+      border: 2px solid #2563eb;
+    }
+    
+    .edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
     @media (max-width: 1024px) {
       .table-header,
       .table-row {
@@ -346,6 +494,24 @@ export class AdminUsers implements OnInit {
   selectedRole = '';
   message = '';
   messageType: 'success' | 'error' = 'success';
+  
+  // Variables pour l'édition
+  showEditForm = false;
+  editingUser: UserWithStats | null = null;
+  editForm = {
+    name: '',
+    email: '',
+    role: 'client' as 'admin' | 'client'
+  };
+
+  // Variables pour l'ajout
+  showAddForm = false;
+  addForm = {
+    name: '',
+    email: '',
+    password: '',
+    role: 'client' as 'admin' | 'client'
+  };
 
   constructor(private authService: AuthService) {}
 
@@ -354,43 +520,109 @@ export class AdminUsers implements OnInit {
   }
 
   loadUsers() {
-    // Simuler des utilisateurs avec statistiques
-    this.users = [
+    // Récupérer les utilisateurs depuis localStorage
+    const allUsers: UserWithStats[] = [];
+    
+    // 1. Ajouter les utilisateurs hardcodés (admins)
+    const hardcodedUsers = [
       {
         id: 1,
         name: 'Admin Principal',
         email: 'admin@afrimarket.com',
-        role: 'admin',
+        role: 'admin' as const,
         orderCount: 0,
         totalSpent: 0
       },
       {
         id: 2,
-        name: 'Marie Dupont',
-        email: 'client@afrimarket.com',
-        role: 'client',
-        orderCount: 3,
-        totalSpent: 125000,
-        lastOrderDate: new Date('2024-01-15')
+        name: 'Admin Secondaire',
+        email: 'admin2@afrimarket.com',
+        role: 'admin' as const,
+        orderCount: 0,
+        totalSpent: 0
       },
       {
         id: 3,
-        name: 'Jean Martin',
-        email: 'jean.martin@email.com',
-        role: 'client',
-        orderCount: 1,
-        totalSpent: 45000,
-        lastOrderDate: new Date('2024-01-10')
-      },
-      {
-        id: 4,
-        name: 'Sophie Bernard',
-        email: 'sophie.bernard@email.com',
-        role: 'client',
-        orderCount: 0,
-        totalSpent: 0
+        name: 'Marie Dupont',
+        email: 'client@afrimarket.com',
+        role: 'client' as const,
+        orderCount: 3,
+        totalSpent: 125000,
+        lastOrderDate: new Date('2024-01-15')
       }
     ];
+    
+    allUsers.push(...hardcodedUsers);
+    
+    // 2. Récupérer les utilisateurs enregistrés depuis localStorage
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const registeredUsersStr = localStorage.getItem('registeredUsers');
+      if (registeredUsersStr) {
+        try {
+          const registeredUsers = JSON.parse(registeredUsersStr);
+          console.log('👥 Utilisateurs enregistrés trouvés:', registeredUsers);
+          
+          // Récupérer les commandes pour calculer les statistiques
+          const ordersStr = localStorage.getItem('orders');
+          let orders: any[] = [];
+          if (ordersStr) {
+            try {
+              orders = JSON.parse(ordersStr);
+            } catch (e) {
+              console.error('❌ Erreur parsing orders:', e);
+            }
+          }
+          
+          // Ajouter chaque utilisateur enregistré avec ses statistiques
+          registeredUsers.forEach((user: any, index: number) => {
+            // Vérifier que l'utilisateur a un ID valide
+            if (!user.id) {
+              console.warn(`⚠️ Utilisateur sans ID ignoré: ${user.name} (${user.email})`);
+              return;
+            }
+            
+            // Calculer les statistiques pour cet utilisateur
+            const userOrders = orders.filter((order: any) => 
+              order.userId === user.id || order.clientEmail === user.email
+            );
+            
+            console.log(`🔍 Recherche commandes pour ${user.name} (${user.email}):`);
+            console.log(`   - ID utilisateur: ${user.id}`);
+            console.log(`   - Commandes trouvées: ${userOrders.length}`);
+            userOrders.forEach((order: any, orderIndex: number) => {
+              console.log(`   - Commande ${orderIndex + 1}: ID=${order.id}, userId=${order.userId}, clientEmail=${order.clientEmail}, total=${order.total}`);
+            });
+            
+            const totalSpent = userOrders.reduce((sum: number, order: any) => 
+              sum + (order.total || 0), 0
+            );
+            
+            const lastOrder = userOrders.length > 0 ? 
+              userOrders.sort((a: any, b: any) => 
+                new Date(b.date).getTime() - new Date(a.date).getTime()
+              )[0] : null;
+            
+            const userWithStats: UserWithStats = {
+              id: user.id, // Utiliser l'ID réel de l'utilisateur
+              name: user.name,
+              email: user.email,
+              role: user.role || 'client',
+              orderCount: userOrders.length,
+              totalSpent: totalSpent,
+              lastOrderDate: lastOrder ? new Date(lastOrder.date) : undefined
+            };
+            
+            allUsers.push(userWithStats);
+            console.log(`✅ Utilisateur ajouté: ${user.name} (${userOrders.length} commandes, ${totalSpent} FCFA)`);
+          });
+        } catch (e) {
+          console.error('❌ Erreur parsing registeredUsers:', e);
+        }
+      }
+    }
+    
+    this.users = allUsers;
+    console.log(`📊 Total utilisateurs chargés: ${this.users.length}`);
     this.applyFilters();
   }
 
@@ -407,8 +639,58 @@ export class AdminUsers implements OnInit {
   }
 
   editUser(user: UserWithStats) {
-    // Ici on pourrait ouvrir un dialog pour modifier l'utilisateur
-    this.showMessage(`Modification de ${user.name} - Fonctionnalité à implémenter`, 'info');
+    this.editingUser = user;
+    this.editForm = {
+      name: user.name,
+      email: user.email,
+      role: user.role
+    };
+    this.showEditForm = true;
+  }
+
+  saveUser() {
+    if (!this.editingUser) return;
+    
+    // Validation
+    if (!this.editForm.name.trim() || !this.editForm.email.trim()) {
+      this.showMessage('Tous les champs sont obligatoires', 'error');
+      return;
+    }
+    
+    // Vérifier si l'email existe déjà (sauf pour l'utilisateur en cours d'édition)
+    const emailExists = this.users.some(u => 
+      u.email === this.editForm.email && u.id !== this.editingUser!.id
+    );
+    
+    if (emailExists) {
+      this.showMessage('Cet email est déjà utilisé par un autre utilisateur', 'error');
+      return;
+    }
+    
+    // Mettre à jour l'utilisateur
+    const userIndex = this.users.findIndex(u => u.id === this.editingUser!.id);
+    if (userIndex !== -1) {
+      this.users[userIndex] = {
+        ...this.users[userIndex],
+        name: this.editForm.name.trim(),
+        email: this.editForm.email.trim(),
+        role: this.editForm.role as 'admin' | 'client'
+      };
+      
+      this.applyFilters();
+      this.showMessage('Utilisateur modifié avec succès', 'success');
+      this.cancelEdit();
+    }
+  }
+
+  cancelEdit() {
+    this.showEditForm = false;
+    this.editingUser = null;
+    this.editForm = {
+      name: '',
+      email: '',
+      role: 'client' as 'admin' | 'client'
+    };
   }
 
   deleteUser(userId: number) {
@@ -423,6 +705,76 @@ export class AdminUsers implements OnInit {
       this.applyFilters();
       this.showMessage('Utilisateur supprimé avec succès', 'success');
     }
+  }
+
+  addUser() {
+    if (!this.addForm.name.trim() || !this.addForm.email.trim() || !this.addForm.password.trim()) {
+      this.showMessage('Tous les champs sont obligatoires', 'error');
+      return;
+    }
+
+    const emailExists = this.users.some(u => u.email === this.addForm.email);
+    if (emailExists) {
+      this.showMessage('Cet email est déjà utilisé par un autre utilisateur', 'error');
+      return;
+    }
+
+    const newUserId = Math.max(...this.users.map(u => u.id)) + 1;
+    const newUser = {
+      id: newUserId,
+      name: this.addForm.name.trim(),
+      email: this.addForm.email.trim(),
+      password: this.addForm.password.trim(),
+      role: this.addForm.role as 'admin' | 'client',
+      orderCount: 0,
+      totalSpent: 0
+    };
+
+    // Ajouter à la liste locale
+    this.users.push(newUser);
+    
+    // Sauvegarder dans localStorage si c'est un client
+    if (newUser.role === 'client') {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const registeredUsersStr = localStorage.getItem('registeredUsers');
+        let registeredUsers = [];
+        
+        if (registeredUsersStr) {
+          try {
+            registeredUsers = JSON.parse(registeredUsersStr);
+          } catch (e) {
+            console.error('❌ Erreur parsing registeredUsers:', e);
+          }
+        }
+        
+        // Ajouter le nouvel utilisateur
+        registeredUsers.push({
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          password: newUser.password,
+          role: newUser.role
+        });
+        
+        // Sauvegarder
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        console.log('💾 Nouvel utilisateur sauvegardé dans localStorage');
+      }
+    }
+    
+    this.applyFilters();
+    this.showMessage('Utilisateur ajouté avec succès', 'success');
+    this.cancelAdd();
+  }
+
+  cancelAdd() {
+    this.showAddForm = false;
+    this.addForm = {
+      name: '',
+      email: '',
+      password: '',
+      role: 'client' as 'admin' | 'client'
+    };
   }
 
   get clientsCount(): number {

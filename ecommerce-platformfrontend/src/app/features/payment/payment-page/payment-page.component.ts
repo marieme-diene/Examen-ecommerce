@@ -200,23 +200,28 @@ interface PaymentMethod {
               </div>
             </div>
 
-            <!-- Paiement à la livraison -->
-            <div *ngIf="selectedMethod === 'cash'" class="cash-form">
-              <div class="cash-logo">
-                <mat-icon style="color: #6c757d; font-size: 48px;">local_shipping</mat-icon>
-                <h3>Paiement à la livraison</h3>
+            <!-- Free Money -->
+            <div *ngIf="selectedMethod === 'free'" class="free-form">
+              <div class="free-logo">
+                <mat-icon style="color: #00a651; font-size: 48px;">account_balance_wallet</mat-icon>
+                <h3>Free Money</h3>
               </div>
               
-              <div class="cash-instructions">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Numéro Free Money</mat-label>
+                <input matInput [(ngModel)]="freeNumber" placeholder="77 123 45 67" (input)="formatPhoneNumber($event)">
+              </mat-form-field>
+              
+              <div class="free-instructions">
                 <mat-icon>info</mat-icon>
                 <div>
                   <p><strong>Instructions :</strong></p>
-                  <ul>
-                    <li>Votre commande sera préparée et expédiée</li>
-                    <li>Vous paierez en espèces lors de la livraison</li>
-                    <li>Frais de livraison : 500 FCFA</li>
-                    <li>Le livreur acceptera les billets et la monnaie</li>
-                  </ul>
+                  <ol>
+                    <li>Vous recevrez une notification Free Money sur votre téléphone</li>
+                    <li>Ouvrez l'application Free Money</li>
+                    <li>Confirmez le paiement dans l'application</li>
+                    <li>Le statut sera mis à jour automatiquement</li>
+                  </ol>
                 </div>
               </div>
             </div>
@@ -424,12 +429,12 @@ interface PaymentMethod {
       font-size: 14px;
     }
 
-    .orange-logo, .wave-logo, .cash-logo {
+    .orange-logo, .wave-logo, .free-logo {
       text-align: center;
       margin-bottom: 24px;
     }
 
-    .orange-instructions, .wave-instructions, .cash-instructions {
+    .orange-instructions, .wave-instructions, .free-instructions {
       display: flex;
       gap: 12px;
       margin: 24px 0;
@@ -439,12 +444,12 @@ interface PaymentMethod {
       color: #856404;
     }
 
-    .orange-instructions ol, .wave-instructions ol, .cash-instructions ul {
+    .orange-instructions ol, .wave-instructions ol, .free-instructions ol {
       margin: 8px 0 0 0;
       padding-left: 20px;
     }
 
-    .orange-instructions li, .wave-instructions li, .cash-instructions li {
+    .orange-instructions li, .wave-instructions li, .free-instructions li {
       margin-bottom: 4px;
     }
 
@@ -493,17 +498,9 @@ export class PaymentPageComponent implements OnInit {
   orangeNumber = '';
   orangeCode = '';
   waveNumber = '';
+  freeNumber = '';
 
   paymentMethods: PaymentMethod[] = [
-    {
-      id: 'card',
-      name: 'Carte bancaire',
-      icon: 'credit_card',
-      description: 'Visa, Mastercard, American Express',
-      color: '#2563eb',
-      processingTime: 'Immédiat',
-      fees: 0
-    },
     {
       id: 'orange',
       name: 'Orange Money',
@@ -523,13 +520,22 @@ export class PaymentPageComponent implements OnInit {
       fees: 0
     },
     {
-      id: 'cash',
-      name: 'Paiement à la livraison',
-      icon: 'local_shipping',
-      description: 'Payer en espèces lors de la livraison',
-      color: '#6c757d',
-      processingTime: 'Lors de la livraison',
-      fees: 500
+      id: 'free',
+      name: 'Free Money',
+      icon: 'account_balance_wallet',
+      description: 'Paiement mobile Free',
+      color: '#00a651',
+      processingTime: '2-5 minutes',
+      fees: 0
+    },
+    {
+      id: 'card',
+      name: 'Carte bancaire',
+      icon: 'credit_card',
+      description: 'Visa, Mastercard, American Express',
+      color: '#2563eb',
+      processingTime: 'Immédiat',
+      fees: 0
     }
   ];
 
@@ -566,8 +572,8 @@ export class PaymentPageComponent implements OnInit {
         return !!(this.orangeNumber && this.orangeCode);
       case 'wave':
         return !!this.waveNumber;
-      case 'cash':
-        return true;
+      case 'free':
+        return !!this.freeNumber;
       default:
         return false;
     }
@@ -617,14 +623,15 @@ export class PaymentPageComponent implements OnInit {
       customerInfo: {
         name: 'Client Test',
         email: 'client@test.com',
-        phone: this.orangeNumber || this.waveNumber
+        phone: this.orangeNumber || this.waveNumber || this.freeNumber
       },
       paymentDetails: {
         cardNumber: this.cardNumber,
         cardExpiry: this.cardExpiry,
         cardCvv: this.cardCvv,
         orangeNumber: this.orangeNumber,
-        waveNumber: this.waveNumber
+        waveNumber: this.waveNumber,
+        freeNumber: this.freeNumber
       }
     };
 

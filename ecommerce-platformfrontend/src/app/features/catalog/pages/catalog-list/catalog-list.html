@@ -9,8 +9,23 @@
 </div>
 
 <div class="catalog-container">
-  <!-- Filtres -->
-  <div class="filters-section">
+  <!-- Bouton pour afficher/masquer les filtres avancés -->
+  <div class="advanced-filters-toggle">
+    <button mat-stroked-button (click)="toggleAdvancedFilters()" class="toggle-btn">
+      <mat-icon>{{ showAdvancedFilters ? 'expand_less' : 'expand_more' }}</mat-icon>
+      {{ showAdvancedFilters ? 'Masquer' : 'Afficher' }} les filtres avancés
+    </button>
+  </div>
+
+  <!-- Filtres avancés -->
+  <div *ngIf="showAdvancedFilters" class="advanced-filters-section">
+    <app-advanced-filters 
+      (filtersChanged)="onFiltersChanged($event)">
+    </app-advanced-filters>
+  </div>
+
+  <!-- Filtres basiques (simplifiés) -->
+  <div class="filters-section" *ngIf="!showAdvancedFilters">
     <div class="search-bar">
       <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Rechercher un produit..." class="search-input">
     </div>
@@ -78,7 +93,9 @@
           <app-product-card *ngFor="let prod of productsByBrand[brand]"
             [product]="prod"
             [isFavorite]="favorites.has(prod.id)"
-            (toggleFavorite)="toggleFavorite(prod.id)"></app-product-card>
+            (toggleFavorite)="toggleFavorite(prod.id)"
+            (addToCartEvent)="addToCart($event)">
+          </app-product-card>
         </div>
       </div>
     </ng-container>

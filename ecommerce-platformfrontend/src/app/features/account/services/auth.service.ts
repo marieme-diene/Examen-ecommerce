@@ -11,6 +11,7 @@ const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'unde
 export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
+  currentUser$ = this.userSubject.asObservable(); // Alias pour compatibilité
 
   constructor() {
     // Charger l'utilisateur depuis localStorage seulement côté client
@@ -23,12 +24,11 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User | null> {
-    // Simulation d'authentification avec rôles
     if (email === 'admin@afrimarket.com' && password === 'admin123') {
       const adminUser: User = {
         id: 1,
-        name: 'Administrateur',
-        email: email,
+        name: 'Admin Principal',
+        email: 'admin@afrimarket.com',
         role: 'admin'
       };
       this.userSubject.next(adminUser);
@@ -36,11 +36,47 @@ export class AuthService {
         localStorage.setItem('user', JSON.stringify(adminUser));
       }
       return of(adminUser);
+    } else if (email === 'admin2@afrimarket.com' && password === 'admin123') {
+      const admin2User: User = {
+        id: 2,
+        name: 'Admin Secondaire',
+        email: 'admin2@afrimarket.com',
+        role: 'admin'
+      };
+      this.userSubject.next(admin2User);
+      if (isBrowser) {
+        localStorage.setItem('user', JSON.stringify(admin2User));
+      }
+      return of(admin2User);
     } else if (email === 'client@afrimarket.com' && password === 'client123') {
       const clientUser: User = {
-        id: 2,
-        name: 'Client',
-        email: email,
+        id: 3,
+        name: 'Marie Dupont',
+        email: 'client@afrimarket.com',
+        role: 'client'
+      };
+      this.userSubject.next(clientUser);
+      if (isBrowser) {
+        localStorage.setItem('user', JSON.stringify(clientUser));
+      }
+      return of(clientUser);
+    } else if (email === 'dienecoumba28@gmail.com' && password === 'client123') {
+      const clientUser: User = {
+        id: 4,
+        name: 'Diene Coumba',
+        email: 'dienecoumba28@gmail.com',
+        role: 'client'
+      };
+      this.userSubject.next(clientUser);
+      if (isBrowser) {
+        localStorage.setItem('user', JSON.stringify(clientUser));
+      }
+      return of(clientUser);
+    } else if (email === 'djibson03@gmail.com' && password === 'client123') {
+      const clientUser: User = {
+        id: 5,
+        name: 'Djibril Fall',
+        email: 'djibson03@gmail.com',
         role: 'client'
       };
       this.userSubject.next(clientUser);
@@ -49,11 +85,28 @@ export class AuthService {
       }
       return of(clientUser);
     } else {
+      const registeredUsers = this.getRegisteredUsers();
+      const user = registeredUsers.find(u => u.email === email);
+      if (user) {
+        this.userSubject.next(user);
+        if (isBrowser) {
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+        return of(user);
+      }
       return of(null);
     }
   }
 
   register(name: string, email: string, password: string): Observable<User | null> {
+    // Vérifier si l'email existe déjà
+    const registeredUsers = this.getRegisteredUsers();
+    const existingUser = registeredUsers.find(u => u.email === email);
+    
+    if (existingUser) {
+      return of(null); // Email déjà utilisé
+    }
+    
     // Simulation d'inscription - tous les nouveaux utilisateurs sont des clients
     const newUser: User = {
       id: Date.now(),
@@ -61,6 +114,11 @@ export class AuthService {
       email: email,
       role: 'client'
     };
+    
+    // Sauvegarder le nouveau compte
+    registeredUsers.push(newUser);
+    this.saveRegisteredUsers(registeredUsers);
+    
     this.userSubject.next(newUser);
     if (isBrowser) {
       localStorage.setItem('user', JSON.stringify(newUser));
@@ -207,7 +265,6 @@ export class AuthService {
     }
     
     // Simulation de mise à jour du rôle
-    console.log(`Rôle de l'utilisateur ${userId} mis à jour vers: ${newRole}`);
     return of(true);
   }
 
@@ -217,7 +274,21 @@ export class AuthService {
     }
     
     // Simulation de suppression d'utilisateur
-    console.log(`Utilisateur ${userId} supprimé`);
     return of(true);
+  }
+
+  // Méthodes pour gérer les comptes créés via l'inscription
+  private getRegisteredUsers(): User[] {
+    if (isBrowser) {
+      const saved = localStorage.getItem('registeredUsers');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  }
+
+  private saveRegisteredUsers(users: User[]) {
+    if (isBrowser) {
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+    }
   }
 } 

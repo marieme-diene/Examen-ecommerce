@@ -9,4 +9,7 @@ export interface Product {
   category: string;
   stock: number;
   brand: string;
+  // Propriétés de notation
+  averageRating?: number;
+  totalReviews?: number;
 } 

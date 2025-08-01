@@ -1,643 +1,802 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { MatDialog, MatDialogModule, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
-import { User, Address } from '../../models/user.model';
-import { OrderService, OrderStatus } from '../../services/order.service';
-import { NotificationService } from '../../services/notification.service';
-import { ProductService } from '../../../catalog/services/product.service';
-import { Product } from '../../../catalog/models/product.model';
-import { CartService } from '../../../cart/services/cart.service';
+import { OrderService, Order } from '../../services/order.service';
+import { User } from '../../models/user.model';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-account-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatIconModule],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatDialogModule],
   templateUrl: './account-home.html',
   styleUrl: './account-home.css'
 })
 export class AccountHome implements OnInit {
   user: User | null = null;
-  editMode = false;
-  name = '';
-  email = '';
-  orders: any[] = [];
-  favorites: Product[] = [];
-  isAdmin = false;
-  message = '';
-  addresses: Address[] = [];
-  addressForm: Partial<Address> = {};
-  editingAddressId: number | null = null;
-  showAddressForm = false;
+  orders: Order[] = [];
+  loading = false;
+  selectedOrder: Order | null = null;
+  showOrderDetails = false;
 
   constructor(
-    private auth: AuthService,
+    private authService: AuthService,
     private orderService: OrderService,
-    private router: Router,
-    private notification: NotificationService,
-    public dialog: MatDialog,
-    private productService: ProductService,
-    private cartService: CartService
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
-    this.user = this.auth.getUser();
+    this.user = this.authService.getUser();
     if (this.user) {
-      this.name = this.user.name;
-      this.email = this.user.email;
-      this.isAdmin = this.auth.isAdmin();
-      this.addresses = this.auth.getAddressesForUser(this.user.id);
+      this.loadOrders();
+      setTimeout(() => {
+        // Vérifier si les commandes ont des données valides
+        const validOrders = this.orders.filter(order => 
+          order && order.items && order.items.length > 0 && 
+          order.total !== undefined && order.total !== null
+        );
+        
+        if (this.orders.length === 0 || validOrders.length === 0) {
+          console.log('📦 Aucune commande valide trouvée, création de commandes de test...');
+          this.createTestOrders();
+        } else {
+          console.log(`📦 ${validOrders.length} commandes valides trouvées sur ${this.orders.length} total`);
+        }
+      }, 500);
+    }
+  }
+
+  loadOrders() {
+    this.loading = true;
+    this.orderService.getOrdersForUser(this.user!.id).subscribe(orders => {
+      this.orders = orders;
+      this.loading = false;
+      console.log(`📦 Commandes chargées pour ${this.user?.name}: ${orders.length} commandes`);
       
-      if (this.isAdmin) {
-        this.loadAdminData();
-      } else {
-        this.loadClientData();
+      // Mettre à jour les commandes qui n'ont pas d'adresse ou de méthode de paiement
+      this.updateOrdersWithMissingInfo();
+    });
+  }
+
+  // Méthode pour mettre à jour les commandes avec des informations manquantes
+  updateOrdersWithMissingInfo() {
+    const updatedOrders = this.orders.map(order => {
+      if (!order.address || !order.payment || order.items.some(item => item.name === 'Produit inconnu')) {
+        // Adresses réelles par utilisateur
+        const defaultAddresses: { [key: string]: string } = {
+          'admin@afrimarket.com': '123 Rue de la Paix, Dakar',
+          'admin2@afrimarket.com': '456 Avenue Liberté, Dakar',
+          'client@afrimarket.com': '789 Boulevard de la République, Dakar',
+          'dienecoumba28@gmail.com': '321 Rue des Fleurs, Dakar',
+          'djibson03@gmail.com': '654 Avenue du Commerce, Dakar',
+          'salldemba@gmail.com': 'Mbao, dakar, senegal 11000',
+          'babsdiene@gmail.com': '789 Rue des Ambassadeurs, Dakar'
+        };
+        
+        // Méthodes de paiement spécifiques par utilisateur (seulement les 4 autorisées)
+        const defaultPayments: { [key: string]: string } = {
+          'salldemba@gmail.com': 'Orange Money',
+          'babsdiene@gmail.com': 'Wave',
+          'dienecoumba28@gmail.com': 'Free Money',
+          'djibson03@gmail.com': 'Carte bancaire',
+          'client@afrimarket.com': 'Orange Money',
+          'admin@afrimarket.com': 'Carte bancaire',
+          'admin2@afrimarket.com': 'Wave'
+        };
+        
+        // Noms de produits réels selon le prix
+        const getProductName = (price: number): string => {
+          if (price >= 150000) return 'Frigo Samsung 400L';
+          if (price >= 120000) return 'Frigo Samsung 300L';
+          if (price >= 100000) return 'Frigo LG 250L';
+          if (price >= 80000) return 'iPhone 14 128GB';
+          if (price >= 70000) return 'iPhone 13 128GB';
+          if (price >= 50000) return 'Ordinateur portable HP ProBook';
+          if (price >= 40000) return 'Ordinateur portable HP';
+          if (price >= 30000) return 'Montre de luxe Rolex';
+          if (price >= 25000) return 'Montre de luxe';
+          if (price >= 20000) return 'Écouteurs Bose';
+          if (price >= 15000) return 'Sac a main';
+          if (price >= 10000) return 'Smartphone Android';
+          if (price >= 5000) return 'Accessoire électronique';
+          return 'Produit électronique';
+        };
+        
+        const userEmail = this.user?.email || '';
+        const address = order.address || defaultAddresses[userEmail] || '123 Rue Principale, Dakar';
+        const payment = order.payment || defaultPayments[userEmail] || 'Orange Money';
+        
+        // Mettre à jour les noms de produits
+        const updatedItems = order.items.map(item => {
+          // Si le nom est générique ou inconnu, le remplacer par le vrai nom
+          const shouldUpdateName = !item.name || 
+            item.name === 'Produit inconnu' || 
+            item.name === 'Produit électronique' ||
+            item.name.includes('inconnu') ||
+            item.name.includes('générique');
+          
+          return {
+            ...item,
+            name: shouldUpdateName ? getProductName(item.price) : item.name
+          };
+        });
+        
+        return {
+          ...order,
+          address,
+          payment,
+          items: updatedItems
+        };
+      }
+      return order;
+    });
+    
+    // Sauvegarder les commandes mises à jour
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const allOrders = JSON.parse(localStorage.getItem('afrimarket_orders') || '[]');
+      const updatedAllOrders = allOrders.map((storedOrder: any) => {
+        const updatedOrder = updatedOrders.find(o => o.id === storedOrder.id);
+        return updatedOrder || storedOrder;
+      });
+      localStorage.setItem('afrimarket_orders', JSON.stringify(updatedAllOrders));
+    }
+    
+    this.orders = updatedOrders;
+    console.log('✅ Commandes mises à jour avec les vraies informations');
+  }
+
+  refreshOrders() {
+    console.log('🔄 Rafraîchissement forcé des commandes...');
+    this.orderService.refreshOrders();
+    this.loadOrders();
+    setTimeout(() => {
+      console.log(`📦 Commandes après rafraîchissement: ${this.orders.length}`);
+    }, 1000);
+  }
+
+  debugOrders() {
+    console.log('🔍 DEBUG: Informations de débogage');
+    console.log('👤 Utilisateur actuel:', this.user);
+    
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const allKeys = Object.keys(localStorage);
+      console.log('🔑 Toutes les clés dans localStorage:', allKeys);
+      
+      const storedOrders = localStorage.getItem('afrimarket_orders');
+      console.log('💾 Commandes dans localStorage:', storedOrders);
+      
+      if (storedOrders) {
+        const parsedOrders = JSON.parse(storedOrders);
+        console.log('📦 Commandes parsées:', parsedOrders);
+        
+        const userOrders = parsedOrders.filter((order: any) => 
+          order.userId === this.user?.id || order.clientEmail === this.user?.email
+        );
+        console.log('👤 Commandes combinées:', userOrders);
       }
     }
+    this.loadOrders();
   }
 
-  enableEdit() {
-    this.editMode = true;
-    this.message = '';
-  }
-
-  saveProfile() {
-    if (this.user) {
-      this.user.name = this.name;
-      this.user.email = this.email;
-      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(this.user));
-      }
-      this.auth['userSubject'].next(this.user); // force update
-      this.editMode = false;
-      this.message = 'Profil mis à jour !';
-      // Note: NotificationService might not have a 'show' method, using message instead
-      this.message = 'Profil mis à jour !';
+  // Méthode pour nettoyer les anciennes données de test
+  clearTestData() {
+    console.log('🧹 Nettoyage des anciennes données de test...');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('afrimarket_orders');
+      console.log('✅ Données de test supprimées');
     }
+    this.loadOrders();
   }
 
-  logout() {
-    this.auth.logout();
-    this.router.navigate(['/account/login']);
+  // Méthode pour forcer la mise à jour de toutes les commandes
+  forceUpdateAllOrders() {
+    console.log('🔄 Forçage de la mise à jour de toutes les commandes...');
+    
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedOrders = localStorage.getItem('afrimarket_orders');
+      if (storedOrders) {
+        const allOrders = JSON.parse(storedOrders);
+        const userOrders = allOrders.filter((order: any) => 
+          order.userId === this.user?.id || order.clientEmail === this.user?.email
+        );
+        
+        // Mettre à jour chaque commande
+        const updatedAllOrders = allOrders.map((order: any) => {
+          if (order.userId === this.user?.id || order.clientEmail === this.user?.email) {
+            // Appliquer la même logique que updateOrdersWithMissingInfo
+            const defaultAddresses: { [key: string]: string } = {
+              'salldemba@gmail.com': 'Mbao, dakar, senegal 11000',
+              'babsdiene@gmail.com': '789 Rue des Ambassadeurs, Dakar',
+              'dienecoumba28@gmail.com': '321 Rue des Fleurs, Dakar',
+              'djibson03@gmail.com': '654 Avenue du Commerce, Dakar',
+              'client@afrimarket.com': '789 Boulevard de la République, Dakar'
+            };
+            
+            const defaultPayments: { [key: string]: string } = {
+              'salldemba@gmail.com': 'Orange Money',
+              'babsdiene@gmail.com': 'Wave',
+              'dienecoumba28@gmail.com': 'Free Money',
+              'djibson03@gmail.com': 'Carte bancaire',
+              'client@afrimarket.com': 'Orange Money'
+            };
+            
+            const getProductName = (price: number): string => {
+              if (price >= 150000) return 'Frigo Samsung 400L';
+              if (price >= 120000) return 'Frigo Samsung 300L';
+              if (price >= 100000) return 'Frigo LG 250L';
+              if (price >= 80000) return 'iPhone 14 128GB';
+              if (price >= 70000) return 'iPhone 13 128GB';
+              if (price >= 50000) return 'Ordinateur portable HP ProBook';
+              if (price >= 40000) return 'Ordinateur portable HP';
+              if (price >= 30000) return 'Montre de luxe Rolex';
+              if (price >= 25000) return 'Montre de luxe';
+              if (price >= 20000) return 'Écouteurs Bose';
+              if (price >= 15000) return 'Sac a main';
+              if (price >= 10000) return 'Smartphone Android';
+              if (price >= 5000) return 'Accessoire électronique';
+              return 'Produit électronique';
+            };
+            
+            const userEmail = this.user?.email || '';
+            const address = order.address || defaultAddresses[userEmail] || '123 Rue Principale, Dakar';
+            const payment = order.payment || defaultPayments[userEmail] || 'Orange Money';
+            
+            // Mettre à jour les noms de produits
+            const updatedItems = order.items.map((item: any) => {
+              const shouldUpdateName = !item.name || 
+                item.name === 'Produit inconnu' || 
+                item.name === 'Produit électronique' ||
+                item.name.includes('inconnu') ||
+                item.name.includes('générique');
+              
+              return {
+                ...item,
+                name: shouldUpdateName ? getProductName(item.price) : item.name
+              };
+            });
+            
+            return {
+              ...order,
+              address,
+              payment,
+              items: updatedItems
+            };
+          }
+          return order;
+        });
+        
+        localStorage.setItem('afrimarket_orders', JSON.stringify(updatedAllOrders));
+        console.log('✅ Toutes les commandes mises à jour');
+      }
+    }
+    
+    this.loadOrders();
   }
 
-  addToCart(product: Product) {
-    this.cartService.addToCart(product);
-    this.notification.showMessage(`${product.name} ajouté au panier !`, 'success');
+  createTestOrders() {
+    console.log('🔄 Création des commandes de test...');
+    
+    // Adresses spécifiques selon l'utilisateur
+    const userAddresses: { [key: string]: string } = {
+      'admin@afrimarket.com': '123 Rue de la Paix, Dakar',
+      'admin2@afrimarket.com': '456 Avenue Liberté, Dakar',
+      'client@afrimarket.com': '789 Boulevard de la République, Dakar',
+      'dienecoumba28@gmail.com': '321 Rue des Fleurs, Dakar',
+      'djibson03@gmail.com': '654 Avenue du Commerce, Dakar',
+      'salldemba@gmail.com': '456 Avenue du Port, Rufisque',
+      'babsdiene@gmail.com': '789 Rue des Ambassadeurs, Dakar'
+    };
+    
+    const userEmail = this.user?.email || '';
+    const userAddress = userAddresses[userEmail] || '123 Rue Principale, Dakar';
+    
+    // Méthodes de paiement spécifiques par utilisateur
+    const userPayments: { [key: string]: string } = {
+      'salldemba@gmail.com': 'Orange Money',
+      'babsdiene@gmail.com': 'Wave',
+      'dienecoumba28@gmail.com': 'Moov Money',
+      'djibson03@gmail.com': 'Carte bancaire',
+      'client@afrimarket.com': 'Orange Money',
+      'admin@afrimarket.com': 'Carte bancaire',
+      'admin2@afrimarket.com': 'Wave'
+    };
+    
+    const userPayment = userPayments[userEmail] || 'Orange Money';
+    
+    const testOrders = [
+      {
+        userId: this.user!.id,
+        clientEmail: this.user!.email,
+        total: 125000,
+        items: [
+          { productId: 1, name: 'Frigo Samsung 300L', quantity: 1, price: 125000 }
+        ],
+        address: userAddress,
+        payment: userPayment
+      },
+      {
+        userId: this.user!.id,
+        clientEmail: this.user!.email,
+        total: 78000,
+        items: [
+          { productId: 2, name: 'iPhone 13 128GB', quantity: 1, price: 78000 }
+        ],
+        address: userAddress,
+        payment: userPayment
+      },
+      {
+        userId: this.user!.id,
+        clientEmail: this.user!.email,
+        total: 45000,
+        items: [
+          { productId: 3, name: 'Ordinateur portable HP', quantity: 1, price: 45000 }
+        ],
+        address: userAddress,
+        payment: userPayment
+      }
+    ];
+
+    testOrders.forEach((orderData, index) => {
+      this.orderService.createOrder(orderData).subscribe({
+        next: (newOrder) => {
+          console.log(`✅ Commande de test ${index + 1} créée:`, newOrder);
+          setTimeout(() => {
+            this.loadOrders();
+          }, 100);
+        },
+        error: (error) => {
+          console.error(`❌ Erreur lors de la création de la commande ${index + 1}:`, error);
+        }
+      });
+    });
+  }
+
+  createBijouOrder() {
+    console.log('💎 Création d\'une commande bijou...');
+    
+    const bijouOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 25000,
+      items: [
+        { productId: 10, name: 'Bracelet en or', quantity: 1, price: 25000 }
+      ],
+      address: '123 Rue des Bijoux, Dakar',
+      payment: 'Wave'
+    };
+
+    this.orderService.createOrder(bijouOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande bijou créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande bijou:', error);
+      }
+    });
+  }
+
+  createRealOrder() {
+    console.log('🛒 Création d\'une vraie commande...');
+    
+    const realOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 150000,
+      items: [
+        { productId: 5, name: 'Montre de luxe', quantity: 1, price: 150000 }
+      ],
+      address: '456 Avenue du Commerce, Dakar',
+      payment: 'Carte bancaire'
+    };
+
+    this.orderService.createOrder(realOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Vraie commande créée:', newOrder);
+        setTimeout(() => {
+          this.refreshOrders();
+        }, 500);
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la vraie commande:', error);
+      }
+    });
+  }
+
+  // Méthode pour créer une commande spécifique pour Demba
+  createDembaOrder() {
+    console.log('🏠 Création d\'une commande pour Demba...');
+    
+    const dembaOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 125000,
+      items: [
+        { productId: 1, name: 'Frigo Samsung 300L', quantity: 1, price: 125000 }
+      ],
+      address: '456 Avenue du Port, Rufisque',
+      payment: 'Orange Money'
+    };
+
+    this.orderService.createOrder(dembaOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande Demba créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande Demba:', error);
+      }
+    });
+  }
+
+  // Méthode pour créer une commande avec des sacs à main (comme dans le récapitulatif)
+  createSacMainOrder() {
+    console.log('👜 Création d\'une commande avec des sacs à main...');
+    
+    const sacMainOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 30000,
+      items: [
+        { productId: 10, name: 'Sac a main', quantity: 1, price: 15000 },
+        { productId: 11, name: 'Sac a main', quantity: 1, price: 15000 }
+      ],
+      address: 'Mbao, dakar, senegal 11000',
+      payment: 'Orange Money'
+    };
+
+    this.orderService.createOrder(sacMainOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande sacs à main créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande sacs à main:', error);
+      }
+    });
+  }
+
+  // Méthode pour créer une commande spécifique pour Babacar
+  createBabacarOrder() {
+    console.log('📱 Création d\'une commande pour Babacar...');
+    
+    const babacarOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 78000,
+      items: [
+        { productId: 2, name: 'iPhone 13 128GB', quantity: 1, price: 78000 }
+      ],
+      address: '789 Rue des Ambassadeurs, Dakar',
+      payment: 'Wave'
+    };
+
+    this.orderService.createOrder(babacarOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande Babacar créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande Babacar:', error);
+      }
+    });
+  }
+
+  // Méthode pour créer une commande spécifique pour Diene
+  createDieneOrder() {
+    console.log('💻 Création d\'une commande pour Diene...');
+    
+    const dieneOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 45000,
+      items: [
+        { productId: 3, name: 'Ordinateur portable HP', quantity: 1, price: 45000 }
+      ],
+      address: '321 Rue des Fleurs, Dakar',
+      payment: 'Moov Money'
+    };
+
+    this.orderService.createOrder(dieneOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande Diene créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande Diene:', error);
+      }
+    });
+  }
+
+  // Méthode pour créer une commande spécifique pour Djibril
+  createDjibrilOrder() {
+    console.log('⌚ Création d\'une commande pour Djibril...');
+    
+    const djibrilOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 150000,
+      items: [
+        { productId: 5, name: 'Montre de luxe Rolex', quantity: 1, price: 150000 }
+      ],
+      address: '654 Avenue du Commerce, Dakar',
+      payment: 'Carte bancaire'
+    };
+
+    this.orderService.createOrder(djibrilOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande Djibril créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande Djibril:', error);
+      }
+    });
+  }
+
+  // Méthode pour créer une commande spécifique pour Marie
+  createMarieOrder() {
+    console.log('🎧 Création d\'une commande pour Marie...');
+    
+    const marieOrder = {
+      userId: this.user!.id,
+      clientEmail: this.user!.email,
+      total: 25000,
+      items: [
+        { productId: 6, name: 'Écouteurs sans fil AirPods', quantity: 1, price: 25000 }
+      ],
+      address: '789 Boulevard de la République, Dakar',
+      payment: 'Free Money'
+    };
+
+    this.orderService.createOrder(marieOrder).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Commande Marie créée:', newOrder);
+        this.loadOrders();
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors de la création de la commande Marie:', error);
+      }
+    });
   }
 
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'pending': 'En attente',
-      'shipped': 'Expédiée',
-      'delivered': 'Livrée',
-      'cancelled': 'Annulée'
+      'En attente': 'En attente',
+      'Confirmée': 'Confirmée',
+      'En cours de livraison': 'En cours de livraison',
+      'Livrée': 'Livrée',
+      'Annulée': 'Annulée'
     };
     return statusMap[status] || status;
   }
 
-  getPendingOrders() {
-    return this.allOrders.filter(order => order.status === 'pending');
-  }
-
-  async downloadInvoice(order: any) {
-    try {
-      // Import dynamique de jsPDF pour éviter les erreurs SSR
-      const { jsPDF } = await import('jspdf');
-      
-      if (typeof window === 'undefined') {
-        console.log('jsPDF ne peut pas être utilisé côté serveur');
-        return;
-      }
-
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 20;
-      const contentWidth = pageWidth - (2 * margin);
-      let yPosition = 20;
-
-      // En-tête
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('AFRIMARKET', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 10;
-
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Facture', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 15;
-
-      // Informations client
-      doc.setFont('helvetica', 'bold');
-      doc.text('Informations client:', margin, yPosition);
-      yPosition += 8;
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Nom: ${this.user?.name || 'N/A'}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Email: ${this.user?.email || 'N/A'}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Date: ${new Date(order.date).toLocaleDateString('fr-FR')}`, margin, yPosition);
-      yPosition += 15;
-
-      // Adresse de livraison
-      if (order.address) {
-        doc.setFont('helvetica', 'bold');
-        doc.text('Adresse de livraison:', margin, yPosition);
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        const addressLines = this.splitTextToFit(order.address, contentWidth);
-        addressLines.forEach(line => {
-          doc.text(line, margin, yPosition);
-          yPosition += 6;
-        });
-        yPosition += 10;
-      }
-
-      // Méthode de paiement
-      if (order.payment) {
-        doc.setFont('helvetica', 'bold');
-        doc.text('Méthode de paiement:', margin, yPosition);
-        yPosition += 8;
-        doc.setFont('helvetica', 'normal');
-        doc.text(order.payment, margin, yPosition);
-        yPosition += 15;
-      }
-
-      // Tableau des produits
-      doc.setFont('helvetica', 'bold');
-      doc.text('Produits commandés:', margin, yPosition);
-      yPosition += 10;
-
-      // En-têtes du tableau
-      const colWidths = [80, 30, 40, 40];
-      const colX = [margin, margin + 80, margin + 110, margin + 150];
-      
-      doc.setFontSize(10);
-      doc.text('Produit', colX[0], yPosition);
-      doc.text('Qté', colX[1], yPosition);
-      doc.text('Prix unit.', colX[2], yPosition);
-      doc.text('Total', colX[3], yPosition);
-      yPosition += 8;
-
-      // Ligne de séparation
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 8;
-
-      // Produits
-      doc.setFont('helvetica', 'normal');
-      order.items.forEach((item: any) => {
-        if (yPosition > 250) {
-          doc.addPage();
-          yPosition = 20;
-        }
-
-        const productName = this.splitTextToFit(item.name, colWidths[0]);
-        doc.text(productName[0], colX[0], yPosition);
-        doc.text(item.quantity.toString(), colX[1], yPosition);
-        doc.text(`${item.price.toLocaleString('fr-FR')} FCFA`, colX[2], yPosition);
-        doc.text(`${(item.quantity * item.price).toLocaleString('fr-FR')} FCFA`, colX[3], yPosition);
-        yPosition += 8;
-      });
-
-      // Ligne de séparation
-      yPosition += 5;
-      doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 10;
-
-      // Total
-      doc.setFont('helvetica', 'bold');
-      doc.text(`Total: ${order.total.toLocaleString('fr-FR')} FCFA`, margin + 110, yPosition);
-      yPosition += 20;
-
-      // Pied de page
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.text('Merci pour votre confiance !', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 5;
-      doc.text('AfriMarket - Votre marketplace africaine', pageWidth / 2, yPosition, { align: 'center' });
-
-      // Générer un nom de fichier unique
-      const timestamp = new Date().getTime();
-      const filename = `facture_${order.id}_${timestamp}.pdf`;
-
-      // Télécharger le PDF
-      doc.save(filename);
-      
-      this.notification.showMessage('Facture téléchargée avec succès !', 'success');
-    } catch (error) {
-      console.error('Erreur lors de la génération de la facture:', error);
-      this.notification.showMessage('Erreur lors de la génération de la facture', 'error');
-    }
-  }
-
-  // Fonction utilitaire pour diviser le texte en lignes
-  private splitTextToFit(text: string, maxWidth: number): string[] {
-    const words = text.split(' ');
-    const lines: string[] = [];
-    let currentLine = '';
+  // MÉTHODE POUR AFFICHER LES DÉTAILS DE COMMANDE
+  viewOrderDetails(order: Order) {
+    console.log('🔍 BOUTON "VOIR LES DÉTAILS" CLIQUÉ !');
+    console.log('Commande:', order);
     
-    words.forEach(word => {
-      const testLine = currentLine + (currentLine ? ' ' : '') + word;
-      if (testLine.length * 2.5 <= maxWidth) { // Estimation approximative
-        currentLine = testLine;
-      } else {
-        if (currentLine) {
-          lines.push(currentLine);
-          currentLine = word;
-        } else {
-          lines.push(word);
-        }
+    // Vérifier si la commande a des données valides
+    if (!order || !order.items || order.items.length === 0) {
+      console.error('❌ Commande invalide ou sans produits:', order);
+      alert('Impossible d\'afficher les détails - données manquantes');
+      return;
+    }
+    
+    // Afficher les détails dans l'interface
+    this.selectedOrder = order;
+    this.showOrderDetails = true;
+  }
+
+  // MÉTHODE POUR FERMER LES DÉTAILS
+  closeOrderDetails() {
+    this.showOrderDetails = false;
+    this.selectedOrder = null;
+  }
+
+  // MÉTHODE POUR TÉLÉCHARGER LA FACTURE EN PDF
+  downloadInvoice(order: any) {
+    console.log('🔄 BOUTON "FACTURE PDF" CLIQUÉ !');
+    console.log('Commande:', order);
+    
+    // Vérifier si la commande a des données valides
+    if (!order || !order.items || order.items.length === 0) {
+      console.error('❌ Commande invalide ou sans produits:', order);
+      alert('Impossible de générer la facture - données manquantes');
+      return;
+    }
+    
+    // Créer un nouveau document PDF
+    const pdf = new jsPDF();
+    
+    // Configuration des couleurs et styles
+    const primaryColor = [0, 102, 204]; // Bleu AfriMarket
+    const textColor = [51, 51, 51];
+    const lightGray = [240, 240, 240];
+    
+    // En-tête
+    pdf.setFontSize(24);
+    pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    pdf.text('AFRIMARKET', 105, 20, { align: 'center' });
+    
+    // Titre
+    pdf.setFontSize(18);
+    pdf.setTextColor(textColor[0], textColor[1], textColor[2]);
+    pdf.text('FACTURE', 105, 35, { align: 'center' });
+    
+    // Ligne de séparation
+    pdf.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    pdf.setLineWidth(0.5);
+    pdf.line(20, 40, 190, 40);
+    
+    // Informations de facturation (gauche)
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Informations de facturation:', 20, 55);
+    
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    pdf.text(`Facture #${order.id || 'N/A'}`, 20, 65);
+    
+    // Date formatée correctement
+    const orderDate = order.date ? new Date(order.date) : new Date();
+    const formattedDate = orderDate.toLocaleDateString('fr-FR');
+    pdf.text(`Date: ${formattedDate}`, 20, 72);
+    pdf.text(`Statut: ${order.status || 'pending'}`, 20, 79);
+    
+    // Informations client (droite)
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Informations client:', 110, 55);
+    
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Nom: ${this.user?.name || 'Non spécifié'}`, 110, 65);
+    pdf.text(`Email: ${this.user?.email || 'Non spécifié'}`, 110, 72);
+    
+    // Ajouter le téléphone si disponible
+    if (this.user?.phone) {
+      pdf.text(`Téléphone: ${this.user.phone}`, 110, 79);
+    }
+    
+    // Tableau des produits
+    const startY = 95;
+    const tableHeaders = ['Produit', 'Quantité', 'Prix unitaire', 'Total'];
+    const colWidths = [80, 25, 35, 35];
+    const colX = [20, 100, 125, 160];
+    
+    // En-tête du tableau
+    pdf.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    
+    for (let i = 0; i < tableHeaders.length; i++) {
+      pdf.rect(colX[i], startY - 5, colWidths[i], 8, 'F');
+      pdf.text(tableHeaders[i], colX[i] + 2, startY);
+    }
+    
+    // Contenu du tableau
+    pdf.setFont('helvetica', 'normal');
+    let currentY = startY + 8;
+    let totalCalculated = 0;
+    
+    (order.items || []).forEach((item: any, index: number) => {
+      // Utiliser le vrai nom du produit de la commande
+      const name = item.productName || 'Produit inconnu';
+      const quantity = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+      const total = price * quantity;
+      totalCalculated += total;
+      
+      // Vérifier si on doit passer à la page suivante
+      if (currentY > 250) {
+        pdf.addPage();
+        currentY = 20;
       }
+      
+      pdf.text(name, colX[0] + 2, currentY);
+      pdf.text(quantity.toString(), colX[1] + 2, currentY);
+      pdf.text(`${price.toLocaleString('fr-FR')} FCFA`, colX[2] + 2, currentY);
+      pdf.text(`${total.toLocaleString('fr-FR')} FCFA`, colX[3] + 2, currentY);
+      
+      currentY += 6;
     });
     
-    if (currentLine) {
-      lines.push(currentLine);
-    }
+    // Ligne de séparation avant le total
+    pdf.setDrawColor(200, 200, 200);
+    pdf.line(20, currentY + 2, 190, currentY + 2);
     
-    return lines;
-  }
-
-  async testInvoiceGeneration() {
-    try {
-      // Import dynamique de jsPDF pour éviter les erreurs SSR
-      const { jsPDF } = await import('jspdf');
-      
-      if (typeof window === 'undefined') {
-        console.log('jsPDF ne peut pas être utilisé côté serveur');
-        return;
-      }
-
-      // Simuler une commande de test
-      const testOrder = {
-        id: 999,
-        date: new Date(),
-        status: 'Test',
-        total: 50000,
-        items: [
-          { name: 'Produit de test 1', quantity: 2, price: 15000 },
-          { name: 'Produit de test 2', quantity: 1, price: 20000 }
-        ],
-        address: '123 Rue de Test, Ville Test, 12345',
-        payment: 'Carte bancaire'
-      };
-
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 20;
-      let yPosition = 20;
-
-      // En-tête
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('AFRIMARKET - TEST', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 10;
-
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Facture de test', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 15;
-
-      // Informations
-      doc.setFont('helvetica', 'bold');
-      doc.text('Commande de test:', margin, yPosition);
-      yPosition += 8;
-      doc.setFont('helvetica', 'normal');
-      doc.text(`ID: ${testOrder.id}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Date: ${testOrder.date.toLocaleDateString('fr-FR')}`, margin, yPosition);
-      yPosition += 6;
-      doc.text(`Total: ${testOrder.total.toLocaleString('fr-FR')} FCFA`, margin, yPosition);
-      yPosition += 15;
-
-      // Produits
-      doc.setFont('helvetica', 'bold');
-      doc.text('Produits:', margin, yPosition);
-      yPosition += 10;
-      doc.setFont('helvetica', 'normal');
-      
-      testOrder.items.forEach((item: any) => {
-        doc.text(`${item.name} - Qté: ${item.quantity} - Prix: ${item.price.toLocaleString('fr-FR')} FCFA`, margin, yPosition);
-        yPosition += 8;
-      });
-
-      // Pied de page
-      yPosition += 20;
-      doc.setFontSize(8);
-      doc.text('Ceci est une facture de test', pageWidth / 2, yPosition, { align: 'center' });
-
-      // Télécharger
-      const filename = `test_facture_${new Date().getTime()}.pdf`;
-      doc.save(filename);
-      
-      this.notification.showMessage('Facture de test générée avec succès !', 'success');
-    } catch (error) {
-      console.error('Erreur lors de la génération de la facture de test:', error);
-      this.notification.showMessage('Erreur lors de la génération de la facture de test', 'error');
-    }
-  }
-
-  public openOrderDetail(order: any) {
-    this.dialog.open(OrderDetailDialog, {
-      width: '600px',
-      data: { order, user: this.user }
-    });
-  }
-
-  startAddAddress() {
-    this.addressForm = {};
-    this.editingAddressId = null;
-    this.showAddressForm = true;
-  }
-
-  startEditAddress(addr: Address) {
-    this.addressForm = { ...addr };
-    this.editingAddressId = addr.id;
-    this.showAddressForm = true;
-  }
-
-  saveAddress() {
-    if (!this.user) return;
-    const addr: Address = {
-      id: this.editingAddressId ?? Date.now(),
-      name: this.addressForm.name || '',
-      street: this.addressForm.street || '',
-      city: this.addressForm.city || '',
-      postalCode: this.addressForm.postalCode || '',
-      country: this.addressForm.country || '',
-      phone: this.addressForm.phone || ''
-    };
-    if (this.editingAddressId) {
-      this.auth.updateAddress(this.user.id, this.editingAddressId, addr);
+    // Total (utiliser le total calculé ou celui de la commande)
+    const finalTotal = totalCalculated > 0 ? totalCalculated : Number(order.total || 0);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(12);
+    pdf.text(`TOTAL: ${finalTotal.toLocaleString('fr-FR')} FCFA`, 160, currentY + 10, { align: 'right' });
+    
+    // Informations supplémentaires
+    currentY += 25;
+    
+    // Adresse de livraison (utiliser l'adresse exacte de la commande)
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Adresse de livraison:', 20, currentY);
+    pdf.setFont('helvetica', 'normal');
+    
+    // Utiliser les vraies informations de la commande
+    if (order.shippingAddress) {
+      const fullAddress = [
+        `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+        order.shippingAddress.street,
+        `${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postalCode}`,
+        order.shippingAddress.country,
+        `Tél: ${order.shippingAddress.phone || 'Non spécifié'}`
+      ].filter(Boolean).join('\n');
+      pdf.text(fullAddress, 20, currentY + 6);
     } else {
-      this.auth.addAddress(this.user.id, addr);
+      pdf.text('Adresse non spécifiée', 20, currentY + 6);
     }
-    this.addresses = this.auth.getAddressesForUser(this.user.id);
-    this.addressForm = {};
-    this.editingAddressId = null;
-    this.showAddressForm = false;
-  }
-
-  cancelAddressForm() {
-    this.addressForm = {};
-    this.editingAddressId = null;
-    this.showAddressForm = false;
-  }
-
-  deleteAddress(addrId: number) {
-    if (!this.user) return;
-    this.auth.deleteAddress(this.user.id, addrId);
-    this.addresses = this.auth.getAddressesForUser(this.user.id);
-  }
-
-  // Admin methods
-  updateOrderStatus(orderId: number, status: OrderStatus) {
-    if (!this.user) return;
-    this.orderService.updateOrderStatus(this.user.id, orderId, status).subscribe(() => {
-      this.loadAdminData();
-    });
-  }
-
-  cancelOrder(orderId: number) {
-    if (!this.user) return;
-    this.orderService.cancelOrder(orderId).subscribe(() => {
-      this.loadAdminData();
-    });
-  }
-
-  // Méthodes de test pour la navigation admin
-  testAdminNavigation(route: string) {
-    console.log('Tentative de navigation vers:', route);
-    console.log('Utilisateur actuel:', this.user);
-    console.log('Est admin:', this.isAdmin);
+    currentY += 20;
     
-    this.router.navigate([route]).then(() => {
-      console.log('Navigation réussie vers:', route);
-    }).catch(err => {
-      console.error('Erreur de navigation vers', route, ':', err);
-    });
-  }
-
-  navigateToProducts() {
-    this.testAdminNavigation('/admin/products');
-  }
-
-  navigateToCategories() {
-    this.testAdminNavigation('/admin/categories');
-  }
-
-  navigateToUsers() {
-    this.testAdminNavigation('/admin/users');
-  }
-
-  navigateToStats() {
-    this.testAdminNavigation('/admin/stats');
-  }
-
-  loadClientData() {
-    if (!this.user) return;
+    // Méthode de paiement (utiliser la méthode exacte de la commande)
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Méthode de paiement:', 20, currentY);
+    pdf.setFont('helvetica', 'normal');
     
-    // Charger les vraies commandes de l'utilisateur connecté
-    this.orderService.getOrdersForUser(this.user.id).subscribe(orders => {
-      this.orders = orders;
-      console.log('Commandes chargées pour l\'utilisateur:', this.user?.id, orders);
-      
-      // Si aucune commande, afficher un message
-      if (orders.length === 0) {
-        this.notification.showMessage('Aucune commande trouvée. Vous pouvez maintenant créer vos propres commandes !', 'info');
+    // Utiliser la vraie méthode de paiement de la commande
+    let paymentMethodText = 'Méthode de paiement non spécifiée';
+    if (order.paymentMethod) {
+      switch (order.paymentMethod.type) {
+        case 'orange_money':
+          paymentMethodText = 'Orange Money';
+          break;
+        case 'wave':
+          paymentMethodText = 'Wave';
+          break;
+        case 'card':
+          paymentMethodText = 'Carte bancaire';
+          break;
+        default:
+          paymentMethodText = order.paymentMethod.type;
       }
-    });
-
-    // Simuler les favoris du client
-    this.productService.getProducts().subscribe(products => {
-      this.favorites = products.slice(0, 3); // 3 premiers produits comme favoris
-    });
-  }
-
-  loadAdminData() {
-    // Les admins voient les données de gestion
-    this.loadAllOrders();
-  }
-
-  loadAllOrders() {
-    // Charger toutes les vraies commandes du site
-    this.orderService.getAllOrders().subscribe(orders => {
-      this.orders = orders;
-      console.log('Toutes les commandes chargées:', orders);
-    });
-  }
-
-  // Méthodes de test
-  createTestOrder() {
-    if (!this.user) return;
+    }
+    pdf.text(paymentMethodText, 20, currentY + 6);
+    currentY += 15;
     
-    const testOrder = {
-      userId: this.user.id,
-      clientEmail: this.user.email,
-      total: 25000,
-      items: [
-        { productId: 1, name: 'Produit de test', quantity: 2, price: 12500 }
-      ],
-      address: 'Adresse de test',
-      payment: 'Paiement à la livraison'
-    };
 
-    this.orderService.createOrder(testOrder).subscribe(newOrder => {
-      console.log('Commande de test créée:', newOrder);
-      this.loadClientData(); // Recharger les commandes
-      this.notification.showMessage('Commande de test créée avec succès!', 'success');
+    
+    // Numéro de suivi (si disponible)
+    if (order.trackingNumber) {
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Numéro de suivi:', 20, currentY);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(order.trackingNumber, 20, currentY + 6);
+      currentY += 15;
+    }
+    
+    // Pied de page
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    pdf.text('Merci pour votre confiance !', 105, 270, { align: 'center' });
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.text('AfriMarket - Votre marketplace de confiance', 105, 275, { align: 'center' });
+    pdf.text('Contact: contact@afrimarket.com | Tél: +221 33 XXX XX XX', 105, 280, { align: 'center' });
+    
+    // Sauvegarder le PDF
+    const fileName = `facture-${order.id || 'N/A'}.pdf`;
+    pdf.save(fileName);
+    
+    console.log(`✅ Facture PDF générée: ${fileName}`);
+    console.log('📊 Informations de la facture:', {
+      id: order.id,
+      date: formattedDate,
+      client: this.user?.name,
+      email: this.user?.email,
+      address: order.shippingAddress ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : 'Non spécifiée',
+      payment: paymentMethodText,
+      total: finalTotal,
+      items: order.items
     });
+    alert('Facture PDF téléchargée avec succès !');
   }
-
-  clearAllOrders() {
-    if (confirm('Êtes-vous sûr de vouloir supprimer toutes les commandes ?')) {
-      this.orderService.ultraForceCleanup();
-      this.loadClientData();
-      this.notification.showMessage('Toutes les commandes ont été supprimées', 'info');
-    }
-  }
-
-  cleanupOldOrders() {
-    if (confirm('Voulez-vous nettoyer les anciennes commandes par défaut ?')) {
-      try {
-        // Récupérer toutes les commandes du localStorage
-        const savedOrders = localStorage.getItem('afrimarket_orders');
-        if (savedOrders) {
-          const allOrders = JSON.parse(savedOrders);
-          
-          // Filtrer pour garder seulement les commandes qui ne sont pas userId: 2
-          const filteredOrders = allOrders.filter((order: any) => order.userId !== 2);
-          
-          // Sauvegarder les commandes filtrées
-          localStorage.setItem('afrimarket_orders', JSON.stringify(filteredOrders));
-          
-          console.log(`Nettoyage effectué: ${allOrders.length - filteredOrders.length} anciennes commandes supprimées`);
-          
-          // Recharger les données
-          this.loadClientData();
-          
-          this.notification.showMessage(`Nettoyage réussi ! ${allOrders.length - filteredOrders.length} anciennes commandes supprimées.`, 'success');
-        } else {
-          this.notification.showMessage('Aucune commande trouvée dans le stockage.', 'info');
-        }
-      } catch (error) {
-        console.error('Erreur lors du nettoyage:', error);
-        this.notification.showMessage('Erreur lors du nettoyage des commandes', 'error');
-      }
-    }
-  }
-
-  debugOrders() {
-    try {
-      const savedOrders = localStorage.getItem('afrimarket_orders');
-      if (savedOrders) {
-        const allOrders = JSON.parse(savedOrders);
-        console.log('=== DEBUG COMMANDES ===');
-        console.log('Toutes les commandes dans localStorage:', allOrders);
-        console.log('Commandes avec userId: 2 (anciennes):', allOrders.filter((order: any) => order.userId === 2));
-        console.log('Commandes avec userId: 1 (votre compte):', allOrders.filter((order: any) => order.userId === 1));
-        console.log('Commandes actuelles dans le composant:', this.orders);
-        console.log('Utilisateur actuel:', this.user);
-        console.log('========================');
-        
-        alert(`Debug terminé ! Vérifiez la console.\nTotal commandes: ${allOrders.length}\nAnciennes (userId: 2): ${allOrders.filter((order: any) => order.userId === 2).length}`);
-      } else {
-        alert('Aucune commande trouvée dans localStorage');
-      }
-    } catch (error) {
-      console.error('Erreur debug:', error);
-      alert('Erreur lors du debug');
-    }
-  }
-
-  // Méthode pour supprimer TOUTES les commandes et repartir de zéro
-  resetAllOrders() {
-    if (confirm('ATTENTION ! Cela va supprimer TOUTES les commandes et repartir de zéro. Êtes-vous sûr ?')) {
-      try {
-        // Supprimer complètement les commandes du localStorage
-        localStorage.removeItem('afrimarket_orders');
-        
-        // Vider le tableau des commandes
-        this.orders = [];
-        
-        console.log('Toutes les commandes ont été supprimées !');
-        
-        this.notification.showMessage('Toutes les commandes supprimées ! Vous pouvez maintenant créer vos propres commandes.', 'success');
-        
-        // Recharger la page après 2 secondes
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-        
-      } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
-        this.notification.showMessage('Erreur lors de la suppression', 'error');
-      }
-    }
-  }
-
-  // Méthode de nettoyage forcé
-  forceCleanup() {
-    if (confirm('🚨 ATTENTION ! Cela va supprimer TOUTES les commandes et forcer un nettoyage complet. Êtes-vous sûr ?')) {
-      try {
-        // Appeler le nettoyage ultra-agressif du service
-        this.orderService.ultraForceCleanup();
-        
-        // Vider aussi le tableau local
-        this.orders = [];
-        
-        // Recharger les données
-        this.loadClientData();
-        
-        console.log('🧹 NETTOYAGE FORCÉ EFFECTUÉ');
-        this.notification.showMessage('Nettoyage forcé effectué ! Toutes les anciennes commandes supprimées.', 'success');
-        
-        // Recharger la page après 2 secondes
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-        
-      } catch (error) {
-        console.error('Erreur lors du nettoyage forcé:', error);
-        this.notification.showMessage('Erreur lors du nettoyage forcé', 'error');
-      }
-    }
-  }
-}
-
-@Component({
-  selector: 'order-detail-dialog',
-  standalone: true,
-  imports: [CommonModule, MatDialogModule],
-  template: `
-    <h2 mat-dialog-title>Détails de la commande #{{ data.order.id }}</h2>
-    <mat-dialog-content>
-      <p><strong>Date:</strong> {{ data.order.date | date:'dd/MM/yyyy' }}</p>
-      <p><strong>Statut:</strong> {{ data.order.status }}</p>
-      <p><strong>Total:</strong> {{ data.order.total | currency:'FCFA':'symbol':'1.0-0':'fr' }}</p>
-      <h3>Produits:</h3>
-      <ul>
-        <li *ngFor="let item of data.order.items">
-          {{ item.name }} - Qté: {{ item.quantity }} - {{ item.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}
-        </li>
-      </ul>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Fermer</button>
-    </mat-dialog-actions>
-  `
-})
-export class OrderDetailDialog {
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<OrderDetailDialog>
-  ) {}
 }

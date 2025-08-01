@@ -24,6 +24,32 @@
   </div>
   <div class="product-info">
     <h1>{{ product.name }}</h1>
+    
+    <!-- Notation du produit -->
+    <div class="product-rating-section" *ngIf="productRating">
+      <div class="rating-summary">
+        <app-star-rating 
+          [rating]="productRating.averageRating" 
+          [readonly]="true" 
+          [showRating]="true">
+        </app-star-rating>
+        <span class="rating-count">{{ productRating.totalReviews }} avis</span>
+      </div>
+      
+      <!-- Distribution des notes -->
+      <div class="rating-distribution" *ngIf="productRating.totalReviews > 0">
+        <div class="rating-bar" *ngFor="let rating of [5,4,3,2,1]">
+          <span class="rating-label">{{ rating }} étoiles</span>
+          <div class="rating-bar-container">
+            <div class="rating-bar-fill" 
+                 [style.width.%]="getRatingPercentage(rating)">
+            </div>
+          </div>
+          <span class="rating-count-small">{{ getRatingCount(rating) }}</span>
+        </div>
+      </div>
+    </div>
+    
     <p *ngIf="product.longDescription; else shortDesc">{{ product.longDescription }}</p>
     <ng-template #shortDesc><p>{{ product.description }}</p></ng-template>
     <div class="product-price">{{ product.price | currency:'FCFA':'symbol':'1.0-0':'fr' }}</div>
@@ -31,4 +57,56 @@
     <button mat-raised-button color="primary" (click)="addToCart()">Ajouter au panier</button>
   </div>
 </div>
+
+<!-- Section des avis -->
+<div *ngIf="product" class="reviews-section">
+  <h2>Avis clients</h2>
+  
+  <!-- Formulaire d'avis -->
+  <app-review-form 
+    *ngIf="!hasUserReviewed && authService.getUser()"
+    [productId]="product.id"
+    [productName]="product.name"
+    (reviewSubmitted)="onReviewSubmitted($event)"
+    (cancelled)="showReviewForm = false">
+  </app-review-form>
+  
+  <!-- Message si pas connecté -->
+  <div *ngIf="!authService.getUser()" class="login-message">
+    <p>Connectez-vous pour laisser un avis</p>
+    <button mat-raised-button color="primary" routerLink="/account/login">
+      Se connecter
+    </button>
+  </div>
+  
+  <!-- Message si déjà noté -->
+  <div *ngIf="hasUserReviewed" class="already-reviewed">
+    <p>Vous avez déjà noté ce produit</p>
+  </div>
+  
+  <!-- Liste des avis -->
+  <div class="reviews-list" *ngIf="reviews.length > 0">
+    <div *ngFor="let review of reviews" class="review-item">
+      <div class="review-header">
+        <div class="reviewer-info">
+          <span class="reviewer-name">{{ review.userName }}</span>
+          <app-star-rating 
+            [rating]="review.rating" 
+            [readonly]="true" 
+            [showRating]="false">
+          </app-star-rating>
+        </div>
+        <span class="review-date">{{ review.date | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <p class="review-comment">{{ review.comment }}</p>
+      <span *ngIf="review.verified" class="verified-badge">✓ Achat vérifié</span>
+    </div>
+  </div>
+  
+  <!-- Message si aucun avis -->
+  <div *ngIf="reviews.length === 0" class="no-reviews">
+    <p>Aucun avis pour le moment. Soyez le premier à noter ce produit !</p>
+  </div>
+</div>
+
 <div *ngIf="!product" class="not-found">Produit introuvable.</div> 
